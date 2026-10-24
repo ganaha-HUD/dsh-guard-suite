@@ -1,0 +1,8 @@
+# Normalize line endings: the repository stores LF, every platform checks out LF.
+* text=auto eol=lf
+*.js    text eol=lf
+*.mjs   text eol=lf
+*.json  text eol=lf
+*.yml   text eol=lf
+*.md    text eol=lf
+*.orig  text eol=lf

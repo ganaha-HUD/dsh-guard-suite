@@ -1,0 +1,45 @@
+# dsh-guard-suite — one entry, two engines.
+#
+#   repeat   : EXPANSION collapse (same phrase emitted tens of thousands of times)
+#   collapse : SHRINK collapse (text and actions vanish, assertions stay level)
+#
+# The two config blocks are passed through verbatim to each vendored engine, so
+# every documented option of the standalone packages works here unchanged.
+- insert:
+    - id: guard-suite
+      name: 'dsh-guard-suite'
+      config:
+        repeat:
+          windowChars: 2400
+          minWindowChars: 1200
+          minSegments: 24
+          phraseRun: 8
+          phraseTopCount: 10
+          lowInfoDupShare: 0.80
+          maxUniqueGramRatio: 0.30
+          holdbackChars: 4096
+          modelIncludes: ['deepseek']
+          truncateChannels: ['reasoning']
+          maxDegenerationRetries: 2
+          copyDir: 'logs/guard-repeat-output-pruned'
+          copyMaxChars: 262144
+          truncate: true
+          continueOnTruncate: true
+          maxTruncationsPerTurn: 1
+          sanitizeGarbage: true
+          cleanupCommand: true
+          logPath: 'logs/dsh-guard-repeat-output.log'
+        collapse:
+          windowSteps: 6
+          minWindowChars: 600
+          simulatedActionWords: 3
+          thinkOnlyStreak: 3
+          pseudoCertainty: 0.90
+          requireFalsification: false
+          maxNoticesPerTurn: 2
+          reportTailSteps: 12
+          thinkOnlyRepairChars: 300
+          modelIncludes: ['deepseek']
+          logPath: 'logs/dsh-guard-collapse.log'
+          commands: true
+          observeOnly: false

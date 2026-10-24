@@ -1,0 +1,15 @@
+{
+  "name": "dsh-guard-suite",
+  "version": "0.1.1",
+  "description": "Both collapse directions in one install: expansion (repetition) and shrink (action vacuum, simulated execution, pseudo-certainty). Vendors dsh-guard-repeat-output 2.1.7 (4 audit patches applied) and dsh-guard-collapse 0.1.0.",
+  "type": "module",
+  "main": "index.js",
+  "exports": { ".": "./index.js", "./cordis.patch.yml": "./cordis.patch.yml", "./package.json": "./package.json" },
+  "files": ["index.js", "vendor", "cordis.patch.yml", "install.mjs", "README.md", "README.zh-CN.md", "PATCHES.md", "USAGE.zh-CN.md"],
+  "keywords": ["dsh", "deepseek-harness", "guard", "collapse", "repetition"],
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "peerDependencies": { "@deepseek-ai/dsh": ">=0.1.6-alpha.2 <0.3.0-0" },
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } },
+  "scripts": { "test": "node test/suite-check.mjs" }
+}
