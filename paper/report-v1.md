@@ -285,4 +285,15 @@ drive-letter paths, URLs, `exit code`, `HTTP nnn`, `sha256`, and number-plus-uni
 
 ## Appendix B. Why the compressed session log needs a splitter
 
-`session.v4.jsonl.zstd` is 5,990 concatenated zstd frames. A single call to `zlib.zstdDecompressSync` returns only the first frame, which is 192 bytes of session header. The expanded file is 47.3 MB. This cost me an hour and is worth writing down.
+The compressed original of the session log (`session.v4.jsonl.zstd`, 12.7 MB) is
+5,990 concatenated zstd frames. A single call to `zlib.zstdDecompressSync` returns
+only the first frame — 192 bytes of session header. This cost me an hour and is
+worth writing down for anyone who obtains the compressed form elsewhere.
+
+**That file is not shipped with this dataset.** During the session a configuration
+dump printed a live `DEEPSEEK_API_KEY`, and the value landed in the log. The
+compressed original still carries it, and re-compressing would change the bytes
+without removing the secret. The plain-text log in `session/` is the redacted one:
+a single substitution of the key for `sk-***REDACTED***`, touching a configuration
+listing rather than a reasoning step, so no annotation or statistic in this report
+changes.

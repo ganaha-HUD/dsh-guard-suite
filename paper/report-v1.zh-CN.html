@@ -173,5 +173,6 @@ li { margin: 3pt 0; text-align: justify; }
 <p><strong>证伪用语</strong>：不通、行不通、放弃、证伪、反例、死路、不可能、走不通、推翻、假设不成立、这条路、错在</p>
 <p><strong>证据标记</strong>：盘符路径、URL、<code>exit code</code>、<code>HTTP nnn</code>、<code>sha256</code>，以及&quot;数字+单位&quot;（B、KB、MB、GB、ms、s、Hz、frames）。</p>
 <h2>附录 B　压缩日志为什么要分帧</h2>
-<p><code>session.v4.jsonl.zstd</code> 是 5,990 个 zstd 帧拼接起来的。单次调用 <code>zlib.zstdDecompressSync</code> 只会解出第一帧——192 字节的会话头。展开后是 47.3 MB。这件事花了我一个小时，值得写下来。</p>
+<p>压缩原件（<code>session.v4.jsonl.zstd</code>，12.7 MB）是 5,990 个 zstd 帧拼接起来的。单次调用 <code>zlib.zstdDecompressSync</code> 只会解出第一帧——192 字节的会话头。这件事花了我一个小时，值得写下来，给那些从别处拿到压缩件的人。</p>
+<p><strong>这个文件不随数据集发布。</strong> 会话进行到某一轮时，一次配置检查把真实的<code>DEEPSEEK_API_KEY</code> 打印了出来，那个值落进了日志。压缩原件仍然带着它，而重新压缩既要改变字节、又去不掉密钥。<code>session/</code> 里给的是脱敏后的明文：把密钥替换成<code>sk-*<strong>REDACTED</strong>*</code>，只动了一处配置输出、没有碰任何推理步骤，所以本报告的标注和统计一个都没变。</p>
 </body></html>
