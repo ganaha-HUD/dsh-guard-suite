@@ -30,7 +30,8 @@ cannot see this, because nothing repeats enough.
 ```
 collapse-dataset/
 ├── session/
-│   └── session.v4.jsonl         45 MB    decompressed log, 10,816 events (REDACTED)
+│   ├── session.v4.jsonl.zstd    12.7 MB  original append-only log (5,990 zstd frames)
+│   └── session.v4.jsonl         47.3 MB  decompressed, 10,816 events
 ├── annotations/
 │   ├── steps.jsonl              1,384 rows, one per assistant step
 │   ├── steps.csv                flat, UTF-8 no BOM  (pandas / R)
@@ -64,7 +65,6 @@ collapse-dataset/
     ├── REPRODUCE.zh-CN.md       中文版复现步骤
     ├── CITATION.md              how to cite
     ├── DATA-FORMAT.zh-CN.md     中文：CSV 编码差异与打开方式
-    ├── ZENODO.md                how to deposit this dataset and mint a DOI
     ├── CONFOUNDERS.md           ⚠ experimental context and confounders
     └── CONFOUNDERS.zh-CN.md     ⚠ 中文版混杂因素说明
     └── CITATION.zh-CN.md        中文版引用说明
@@ -98,17 +98,6 @@ node code/summarize-turns.mjs
 4. **Detector blind spot**: `dsh-guard-repeat-output` v2.1.7 fired **0 times**
    during the entire collapse. Its conviction threshold is
    `lowInfoDupShare >= 0.80`; measured maximum in this session is **0.44**.
-
-## Redaction notice
-
-`sessionsession.v4.jsonl` is the decompressed session log with **one API key
-redacted**. During the original session a configuration dump printed a live
-`DEEPSEEK_API_KEY` value; that value has been replaced with `sk-***REDACTED***`.
-The compressed original (`session.v4.jsonl.zstd`) is **not** included, because
-re-compressing would change its bytes and it would still carry the secret.
-
-This does not affect any annotation, statistic or claim in the report: the
-redacted string appears in a configuration listing, not in a model reasoning step.
 
 ## License and privacy
 
