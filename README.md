@@ -151,3 +151,15 @@ MIT — see [`LICENSE`](./LICENSE).
 This package vendors MIT-licensed third-party code. See
 [`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md); the upstream license is
 retained unmodified at `vendor/repeat/LICENSE`.
+---
+
+## Related Work & Concept Overlap
+
+After publishing the preprint, subsequent literature searches revealed highly relevant works that require acknowledgment and clarification of this report's scope:
+
+*   **Training-time template collapse:** *RAGEN-2 (Wang et al., ICML 2026)* describes "template collapse" occurring during RL training, driven by low reward signal-to-noise ratios. This differs from the present report, which observes a similar contraction during *inference*, triggered by context dynamics (persona injection).
+*   **Theoretical framing of agency collapse:** *Figurelli (2026)* (Zenodo: `10.5281/zenodo.18601688`) proposed the *Agency Collapse Hypothesis*, describing "state-claim failures". This overlaps conceptually with our observed "simulated execution". However, Figurelli provided a theoretical framework, whereas this report provides a fully annotated, step-by-step empirical quantification (1,384 steps).
+*   **Incident-level vs. step-level analysis:** *arXiv `2606.14589`* provides a longitudinal taxonomy of "silent failures" in production agents. Its unit of analysis is the *incident*, whereas this report captures the *step-level temporal dynamics* (the delayed collapse structure).
+*   **Persona injection impact:** *arXiv `2509.03730`* (*The Personality Illusion*) finds limited immediate behavioral impact from persona injection. This complements our findings: while immediate behavioral shifts may be minimal, this session demonstrates that persona injection can initiate a delayed, systemic degradation via template accumulation over multiple turns.
+
+This report's primary contributions are: (1) **Quantifying the delayed temporal structure**; (2) highlighting the **step-level vs. turn-level effect size reversal** (Cliff's δ = 0.144 vs. 0.521); and (3) providing a **quantitative precursor signal** (94.4% probability of collapse within 20 turns after a `suspect` turn).
