@@ -1,0 +1,60 @@
+﻿dsh-groupchat: UPDATE CHECK (local v0.6.0 vs gitee main v0.6.5)
+=============================================================
+Time : 2026-10-20 22:15
+
+LOCAL STATE
+  installed version : 0.6.0
+  resolved commit   : 7eaf803e6e645b7f91bdfeb7e8cdd7d1d2768d3f  (2026-10-08)
+  spec in package.json : https://gitee.com/jaxleon/dsh-groupchat.git   (not commit-pinned by intent)
+  lockfile holds the concrete commit, so a plain reinstall can pick up later commits
+  peerDependencies : none, so the desktop 0.2.1 upgrade did not strand it
+  bundles: ok, one physical copy, one profile entry - configuration is clean
+
+REMOTE STATE
+  gitee main -> 0.6.5, commit d8b1d13c02ad137f8cb2dc883b62ee9344aa234f (2026-10-16)
+  five releases in eight days:
+      7eaf803e  v0.6.0  2026-10-08   <- installed
+      ab3794e9  v0.6.1  2026-10-14
+      04908363  v0.6.2  2026-10-14
+      5d286ed3  v0.6.3  2026-10-15
+      fb4644d6  v0.6.4  2026-10-15
+      d8b1d13c  v0.6.5  2026-10-16
+  no CHANGELOG.md / RELEASE.md in the repo (both 404), so the differences had to be read off the code
+  and the README.
+
+WHAT ACTUALLY CHANGED
+  index.js grew 2274 -> 2597 lines (+323). Top-level exported symbols are identical (7 vs 7), so the
+  growth is not new exports but new capability inside. The README states what it is:
+      "任务分发（0.6.3 起的第二个职务）：用户提了需求、又没说由谁来做时，验收官可以自己决定接不接：
+       接就用 groupchat_dispatch 建一个新会话、把任务派给它，并自动把它放进监督名单"
+  i.e. from 0.6.3 onward the acceptance-officer role can take a task, open a session for it and add itself
+  to the supervision list - a new tool (groupchat_dispatch) rather than a new export.
+
+THE duplicate-route BUG IS NOT FIXED
+  Compared the reactivation block line by line: local v0.6.0 L43-79 and remote v0.6.5 L43-79 are
+  identical, including "Holding both the disposer and the owning fiber ..." and the try/catch that only
+  warns "stale /groupchat route cleanup failed". `live = { disposeRoute, fiber: ctx.fiber }` is the same
+  too. So a HOT re-activation can still collide with a stale route in v0.6.5.
+  (Correction of an earlier interim read: I first thought the header comment had changed; it had not.
+  Both versions say the same thing.)
+
+CONSEQUENCE FOR HOW TO UPDATE
+  The plugin's own README prescribes uninstall-then-reinstall and says it deliberately does not
+  auto-update:
+      "更新提示：侧栏最底部发现新版本时出现一行提示，点开是三步更新指引
+       （复制下载网址 -> 卸载插件 -> 用该网址重装并重启 DSH）"
+      "更新走卸载重装，不做自动更新"
+      "判断依据是磁盘上装的那一版，不是正在跑的代码 —— DSH 不热重载插件"
+  That path happens to avoid the duplicate-route bug entirely, because uninstall removes the bundle and
+  the restart rebuilds the webserver route table. A "hot" update would not.
+
+RECOMMENDATION
+  Update if the task-dispatch capability is wanted; otherwise v0.6.0 keeps working (groups, members,
+  @-mentions, SSE, nick, supervision all present and the bundle reports ok).
+  Procedure, with the restart made explicit in the middle:
+      1. Plugins page -> uninstall dsh-groupchat
+      2. RESTART DSH              (clears the stale /groupchat route - this is the step that matters)
+      3. Plugins page -> install dsh-groupchat from https://gitee.com/jaxleon/dsh-groupchat.git
+      4. restart once more, then confirm the card shows 0.6.5
+  Note the plugin's own update hint reads the version ON DISK, so right after reinstalling it will say
+  "已是 0.6.5，重启后生效" until the restart.

@@ -1,0 +1,49 @@
+{
+  "name": "dsh-guard-repeat-output",
+  "version": "2.1.7",
+  "description": "Host-side degeneration guard for DSH: strips garbage code points from the stream, detects repetition collapse and discards the attempt before any of it enters history, and can retroactively decontaminate a session that was already poisoned.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "guard",
+    "repetition",
+    "cordis-plugin"
+  ],
+  "license": "MIT",
+  "author": "Mcd0LUO",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mcd0LUO/dsh-guard-repeat-output.git"
+  },
+  "homepage": "https://github.com/Mcd0LUO/dsh-guard-repeat-output#readme",
+  "bugs": {
+    "url": "https://github.com/Mcd0LUO/dsh-guard-repeat-output/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": ">=0.1.6-alpha.2 <0.3.0-0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

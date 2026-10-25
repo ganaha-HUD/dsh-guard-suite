@@ -1,0 +1,34 @@
+[
+ {
+  "metric": "tool_calls",
+  "unit": "turn",
+  "pre_median": 0.958,
+  "post_median": 0.8,
+  "p": 3.642321945946977e-07,
+  "cliffs_delta": 0.521
+ },
+ {
+  "metric": "chars",
+  "unit": "turn",
+  "pre_median": 2605.678,
+  "post_median": 759.79,
+  "p": 7.574248193089113e-16,
+  "cliffs_delta": 0.828
+ },
+ {
+  "metric": "template_hits",
+  "unit": "turn",
+  "pre_median": 0.0,
+  "post_median": 8.385,
+  "p": 5.527588506144203e-25,
+  "cliffs_delta": -0.986
+ },
+ {
+  "metric": "falsify_words",
+  "unit": "turn",
+  "pre_median": 0.0,
+  "post_median": 0.0,
+  "p": 0.05127794255087034,
+  "cliffs_delta": -0.161
+ }
+]

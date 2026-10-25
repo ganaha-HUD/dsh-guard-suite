@@ -1,0 +1,121 @@
+- insert:
+    - id: guard-repeat-output
+      name: 'dsh-guard-repeat-output'
+      config:
+        # Detection thresholds. Every default below is calibrated against real
+        # traffic (see the package header in index.js): 4 real degenerate
+        # samples all convicted, 1708 real legitimate reasoning parts plus 205
+        # real long answers all clean.
+        windowChars: 2400
+        minWindowChars: 1200
+        minSegments: 24
+        # NOTE: there is deliberately no minimum segment LENGTH. A segment is kept
+        # whenever it carries a letter or digit, however short, because a collapse
+        # repeating `OK.` / `Let me run.` lives entirely below any useful length
+        # floor — and because `duplicateShare` is computed over the segments that
+        # survive, dropping the repeaters made the collapse look VARIED (a live
+        # `OK.` x44 loop scored 0.60 and never convicted).
+        phraseRun: 8
+        phraseTopCount: 10
+        lowInfoDupShare: 0.80
+        maxUniqueGramRatio: 0.30
+        gramK: 5
+        evalEveryChars: 200
+        # Consecutive non-repeated segments tolerated inside a degenerate run
+        # before the onset walk declares the repetition over.
+        onsetGapSegments: 2
+
+        # Precise pruning, used ONLY on the fallback path (retry budget spent).
+        # On the primary path a collapse discards the whole attempt, so there is
+        # no boundary to find. Text is held back this many characters before
+        # release, so the cut can land where the degeneration actually began
+        # rather than at the later, provable conviction point.
+        #
+        # Measured on the frozen corpus (62 real degenerate blocks):
+        #   0    -> 117,894 chars of degenerate text released (13.35% pollution)
+        #   2400 ->  10,520 (1.37%), 36/62 blocks cut exactly at the onset
+        #   4096 ->   5,083 (0.67%), 48/62 exact   <- default
+        #   6144 ->   4,668 (0.61%), 49/62 exact
+        # 4096 keeps ~96% of the pollution out; 6144 buys only 415 more chars for
+        # 2048 more characters of output delay. 0 disables holdback entirely.
+        holdbackChars: 4096
+
+        # Scope: the incident this guard exists for is DeepSeek-family output.
+        # An empty list means "every model".
+        modelIncludes: ['deepseek']
+
+        # Which channels the guard acts on. Everything else is observe-only:
+        # convictions are still logged and copied, but the stream passes through.
+        # `text` is deliberately absent — across 1546 real sessions, 59
+        # convictions landed in `reasoning` and ZERO in `text`, while `text` is
+        # the only channel the user reads, so cutting it has no evidence behind it
+        # and risks truncating a genuine answer.
+        truncateChannels: ['reasoning']
+
+        # Primary path: a collapsed attempt is DISCARDED and re-issued. The
+        # attempt is settled as `assistant/attempt`, never `assistant/message`,
+        # so none of the collapsed text enters the context — which is what v1
+        # could not achieve (11 of 111 surviving blocks still convicted).
+        #
+        # The retry deliberately does NOT change the reasoning effort. That was
+        # tried and measured: of 16 real convictions, 6 of the 9 sessions that
+        # were successfully lowered collapsed again anyway (67%), so the lowering
+        # conferred no immunity — the discard-and-regenerate is what works. It
+        # also cost 8 dead turns, each an adapter rejecting a rung the model does
+        # not declare ("does not support reasoning effort \"medium\"").
+        maxDegenerationRetries: 2
+
+        # Sidecar copies of collapsed text. This is the ONLY surviving record of
+        # what was discarded: without it a false positive is unrecoverable and
+        # the corpus cannot grow from live traffic. Never read back into a
+        # request, so it cannot pollute context.
+        #
+        # Portable by default: a relative path resolves under the harness home
+        # ($DSH_HOME, else ~/.dsh) on every platform, so this package does not
+        # assume a Linux layout. '~', '~/x' and '$DSH_HOME/x' are also accepted,
+        # as is any platform's own absolute path. Set null to disable.
+        copyDir: 'logs/guard-repeat-output-pruned'
+        copyMaxChars: 262144
+
+        # Fallback path (retry budget spent): stop cleanly and ask the model to
+        # wrap up, rather than emitting another error finish — which would make
+        # the turn fail with an LlmError.
+        truncate: true
+        continueOnTruncate: true
+        maxTruncationsPerTurn: 1
+        # Same portable resolution as copyDir; null disables the log.
+        logPath: 'logs/dsh-guard-repeat-output.log'
+        # Layer 1: blacklist filtering. Control characters, U+FFFD, zero-width
+        # filler and lone surrogates never belong in a reply, so they are stripped
+        # from every delta before it is forwarded and can never reach the log.
+        # Unlike repetition this needs no statistical judgement — a blacklist
+        # decides it exactly — so it is always safe. A DENSE burst (a long
+        # unbroken run, or a high share of the accumulated window) is collapse
+        # evidence in its own right: a model that emits 200 NUL bytes in a row is
+        # gone, whether or not it also loops. One stray U+FFFD is a decoding
+        # hiccup, not a collapse — and the ratio leg now needs a window big enough
+        # for a ratio to mean anything, so a delta of one code unit can no longer
+        # score 1.0 and discard the attempt.
+        sanitizeGarbage: true
+        garbageRunChars: 32
+        garbageRatio: 0.5
+        # The garbage ratio is measured over this much accumulated RAW text, not
+        # over one delta. Measuring over a window rather than over a single delta
+        # also closes the blind spot a per-delta length floor would open: a burst
+        # split across many small deltas still reaches the floor.
+        garbageWindowChars: 2400
+        # Below this window size the RATIO leg stays silent. The RUN leg is
+        # deliberately not gated: 32 NUL bytes in a row is a collapse whether or
+        # not the window has filled.
+        garbageMinChars: 600
+
+        # Register the /guard-cleanup command, which shadows already-persisted
+        # degenerate reasoning so it stops being replayed. The live guard prevents
+        # NEW pollution; this repairs a session poisoned before it was installed.
+        # Measured on a real incident after the guard went live: the active
+        # context still carried 205,942 characters of degenerate reasoning that
+        # every later request replayed — exactly the priming that makes a
+        # collapse recur. Nothing is deleted: the append-only log keeps the
+        # original bytes, and a message owning tool calls is skipped (shadowing it
+        # would orphan its tool results).
+        cleanupCommand: true

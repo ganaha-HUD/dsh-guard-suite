@@ -1,0 +1,71 @@
+﻿ROUTE A (dsh-qwen-paint) - FEASIBILITY CHECK ON THIS MACHINE
+==========================================================
+Time : 2026-10-20 22:33
+
+WHAT WAS VERIFIED (not assumed from the pasted plan)
+  1. The repository is real: github.com/yanfei0725/dsh-qwen-paint, MIT, 21 stars, pushed today 14:01Z.
+  2. It IS a DSH plugin: package.json declares dsh.bundle.patch plus dsh.compatibility with
+       dsh ">=0.2.0-rc.2", node ">=18.0.0", and a dshReleases map listing 0.2.1-rc.2 as "compatible"
+       with real-machine evidence (5 tools + 3 status endpoints registered, ComfyUI launched).
+     Our desktop build is 0.2.1-rc.2, so compatibility is genuinely claimed and tested.
+  3. Model repo is abenzerps/Qwen-Image-2.1-Uncensored-**Quantized** (the pasted plan said "-GGUF",
+     which does not resolve). License on the hub: "other".
+
+FOUR INACCURACIES IN THE PASTED PLAN
+  a) Repository name: -Uncensored-GGUF -> actual -Uncensored-Quantized.
+  b) Model size: Q4_K_M is 4.29 GB, not 4.60 GB. More importantly the plan omits the components that
+     are mandatory alongside it:
+        qwen-image-2.1-UC-Q4_K_M.gguf          4.29 GB
+        text_encoders/qwen3vl_8b_w4a8...       5.88 GB  (INSTALL.md lists it; int8_convrot is 8.71 GB)
+        vae/qwen_image_2.1_vae_bf16...         0.63 GB
+        -------------------------------------------------
+        realistic total                     ~10.8 GB  (not 4.6)
+  c) ComfyUI-GGUF node: the light tier requires it ("否则出图会被 ComfyUI 直接拒收" per INSTALL.md).
+     The plan never mentions it.
+  d) The XPU environment: the plan says torch.xpu is needed but does not say that this machine does not
+     have it. Measured: torch 2.14.1+**cpu**, torch.xpu.is_available() = False, no intel_extension_for_pytorch
+     installed, no gguf package. ComfyUI is not installed anywhere either.
+
+DECISIVE FINDING - THE PLUGIN'S OWN CHECK REFUSES THIS HARDWARE
+  Ran the author-prescribed read-only step: `node scripts/setup.mjs --check` (no downloads).
+      [0] Inspecting GPU ...
+          Intel(R) Arc(TM) B370 GPU          (via registry, not WMI)
+          Verdict: Intel integrated GPU -> basically cannot run, consider another machine
+      [1] Locating ComfyUI ...
+          not found
+  INSTALL.md line 99 states the same thing in the support table:
+      | Intel 核显 | 基本跑不动，建议换台机器 |
+
+  So route A is not a matter of extra effort on this laptop: the plugin's own gate classifies this GPU as
+  unable to run it. Installing would cost ~10.8 GB of downloads plus a ComfyUI + torch-XPU + IPEX + GGUF
+  stack, and still be refused/glacial at the end.
+
+TWO FURTHER CAVEATS WORTH KNOWING
+  - License: INSTALL.md says the model is under the Qwen Research License - research/evaluation only,
+    commercial use forbidden. That is a materially different position from the currently deployed
+    FLUX.1-schnell int4, which is Apache-2.0, and it matters given the user's earlier note about possibly
+    publishing and partially commercialising work.
+  - Content: the GGUF is the "Uncensored" variant. The author's own note: "该 GGUF 属 Uncensored 系，
+    介意可装完后自行替换".
+
+BETTER PATH FOUND - OPENVINO ALREADY KNOWS QWEN-IMAGE
+  Checked the installed runtime instead of assuming:
+      openvino_genai 2026.4.1.0
+      classes: QwenImageTransformer2DModel, Qwen3TextEncoder   <- both present
+      Text2ImagePipeline factories: flux, latent_consistency_model, stable_diffusion,
+                                    stable_diffusion_3, stable_diffusion_xl
+  So the underlying architecture IS supported, but there is still no high-level `qwen_image` factory -
+  the same situation FLUX and Z-Image were in before their factories landed. Once upstream adds
+  `qwen_image`, switching would be a one-line environment change on the iGPU (no ComfyUI, no XPU torch,
+  no uncensored weights), exactly like the LCM -> FLUX migration.
+
+RECOMMENDATION
+  Do not install route A on this machine: the author's own detection rejects the GPU, the real download is
+  ~2.3x what the plan stated, two mandatory prerequisites were omitted, and the weights are research-only.
+  Keep FLUX int4 (8.61 GB, iGPU, 13-18 s/image, Apache-2.0) as the local generation path.
+  Revisit Qwen-Image when openvino_genai exposes a qwen_image factory; the plugin source is already
+  downloaded and kept in case a discrete-GPU machine becomes available.
+
+ARTIFACTS LEFT ON DISK (for reuse or deletion)
+  D:\AI_file\_downloads\dsh-qwen-paint-main.tgz        0.79 MB
+  D:\AI_file\workspace\dsh-qwen-paint\                 87 files (extracted repo)

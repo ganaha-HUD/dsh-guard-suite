@@ -1,0 +1,68 @@
+﻿TOOLIFYING THE UNCENSORED GENERATION ROUTE
+==========================================
+Time : 2026-10-21 06:57
+
+QUESTION
+  Should the Qwen-Image route become a tool that other conversations can call, rather than a command line
+  the user has to run by hand?
+
+ANSWER
+  Yes, and it is done. The tool is registered and verified end to end.
+
+IMPLEMENTATION
+  Added `image_generate_uncensored` to the existing vision MCP server (D:\AI_file\mcp\vision-server.py),
+  now v1.12.0, so no new MCP entry, no new configuration, and no new process are needed. Every
+  conversation that already sees mcp__vision__* tools sees this one too.
+
+  It shells out to sd-cli.exe (the engine has no daemon mode). Each call therefore re-reads about 9.3 GB
+  of weights: roughly 4 s with a warm file cache, closer to a minute cold. That cost is accepted rather
+  than solved, because building a resident server would mean writing and maintaining a second service.
+
+KEY DESIGN DECISIONS
+  1. A SEPARATE TOOL, not a flag on image_generate.
+     The two models carry different licences - FLUX is Apache-2.0, these weights are Qwen Research
+     License (research/evaluation only, no commercial use). Folding them behind one tool name would make
+     it possible to produce a commercially unusable image while believing the licence was Apache-2.0.
+     Separate names make the distinction impossible to miss.
+  2. FLUX STAYS THE DEFAULT.
+     Qwen-Image is about 14x slower for a comparable job, so it is reserved for the case the user
+     actually asks for: uncensored output or a different model.
+  3. HARD CONSTRAINTS ENFORCED IN CODE, not in prose.
+     steps < 20            -> ValueError (4 steps was measured and is unusable blurry noise)
+     width/height % 32 != 0 -> ValueError (the sampler requires it)
+     width/height > 1024    -> ValueError (keeps the call inside the MCP timeout)
+  4. THE LICENCE WARNING TRAVELS WITH THE TOOL.
+     It appears in the tool description (so any model calling it reads the restriction), in the return
+     payload, and in the rules. A restriction that lives only in documentation gets skipped.
+
+MEASURED END TO END (through the MCP tool, not just the function)
+  prompt  : a steam locomotive on a mountain bridge, wide shot
+  512x512, 20 steps, cfg 6.0, euler  ->  84.0 s, returned path + licence line
+  A second call via plain Python (bypassing MCP) took 89.3 s, and a 4-step call rendered unusable noise,
+  confirming the minimum-steps guard is justified rather than arbitrary.
+
+MCP TIMEOUT RAISED
+  toolCallTimeoutMs in ~/.dsh/profiles/desktop/cordis.patch.yml went from 300000 to 600000, because a
+  1024x1024 render needs 5-6 minutes and would otherwise be killed mid-flight. The previous file was
+  backed up alongside it.
+
+RULES UPDATED (five carriers, kept consistent)
+  policy\ai-tool-policy.md       tool count 8 -> 9; new table row; routing step 10; three new hard-limit
+                                 rows (min steps, licence, reload cost); section 11 now covers both tools
+  policy\ai-tools.json           tools array 8 -> 9 with backend/limits/licence/prefer; routing line 10;
+                                 imageGenerationBudget.appliesToUncensored; policyVersion 1.10.0
+  AGENTS.md (workspace rules)    new tool bullet; budget line now names both tools
+  policy\deploy\global-agents.md new tool bullet; budget line now names both tools
+  %USERPROFILE%\.dsh\AGENTS.md   redeployed, verified byte-identical to the source (6556 chars)
+  Rule 8 backup refreshed: 13 files, 0 failures.
+
+STATUS SURFACE
+  vision_status now prints a line for the new route, so any conversation can check it in one call:
+      uncensored: D:\AI_file\models\qwen-image-2.1-uncensored [present]
+
+KNOWN LIMITS, STATED PLAINLY
+  - Slow: 85 s at 512x512/20 steps, about 5-6 min at 1024x1024. FLUX is 13-18 s.
+  - No vision weights were downloaded, so this is text-to-image only; image editing is unavailable.
+  - The tool serialises calls behind a lock: one generation at a time, because the GPU and the RAM are
+    shared. Two concurrent calls would thrash rather than parallelise.
+  - Licence remains research-only. Anything meant for publication or sale should use FLUX.

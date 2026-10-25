@@ -1,0 +1,77 @@
+import ast
+import shutil
+import time
+
+P = r"D:\AI_file\mcp\vision-server.py"
+t = open(P, encoding="utf-8").read()
+print("=== 确认锚点存在 ===")
+for probe in ('T2I_KIND = os.environ.get', 'def image_generate(prompt: str', '"OCR       : PP-OCRv6-small via OpenVINO (CPU; the upstream backend hardcodes CPU)",',
+              'if __name__ == "__main__":'):
+    print("  %-70s %s" % (probe[:68], probe in t))
+
+shutil.copy2(P, P + ".bak-harden-" + time.strftime("%Y%m%d-%H%M%S"))
+log = []
+
+
+def rep(old, new, label):
+    global t
+    if old not in t:
+        log.append(("FAIL", label))
+        return
+    t = t.replace(old, new, 1)
+    log.append(("OK", label))
+
+
+# a) T2I_HINT 放在模块级（T2I_KIND 之后），绝不能插在装饰器和函数之间
+rep('T2I_KIND = os.environ.get("DSH_T2I_KIND", "latent_consistency_model")',
+    'T2I_KIND = os.environ.get("DSH_T2I_KIND", "latent_consistency_model")\n'
+    'T2I_HINT = (" | If the model directory was just changed, this server process is probably still running "\n'
+    '            "the old configuration: restart the MCP server (or the client) so it reloads, or point "\n'
+    '            "DSH_T2I_MODEL at an existing model directory.")',
+    "a1) T2I_HINT 定义（模块级）")
+
+# b) 只替换函数体，不动装饰器
+rep('''    if not str(prompt).strip():
+        raise ValueError("prompt must not be empty")
+    image, elapsed = t2i_generate(str(prompt), device, negative_prompt, width, height, steps, guidance, seed)''',
+'''    if not str(prompt).strip():
+        raise ValueError("prompt must not be empty")
+    try:
+        image, elapsed = t2i_generate(str(prompt), device, negative_prompt, width, height, steps, guidance, seed)
+    except Exception as exc:                      # noqa: BLE001
+        # failures used to be silent: nothing reached vision-mcp.log, which made this hard to diagnose
+        log("image_generate FAILED device=%s prompt=%r error=%s: %s" % (device, str(prompt)[:60], type(exc).__name__, exc))
+        raise RuntimeError("%s: %s%s" % (type(exc).__name__, exc, T2I_HINT)) from exc''',
+    "b) 生图异常写日志 + 修复指引")
+
+# c) vision_status 增加三个模型的健康状态
+rep('''        "OCR       : PP-OCRv6-small via OpenVINO (CPU; the upstream backend hardcodes CPU)",
+        "budget    : %d visual tokens per VLM request" % TOKEN_BUDGET,''',
+'''        "OCR       : PP-OCRv6-small via OpenVINO (CPU; the upstream backend hardcodes CPU)",
+        "image gen : %s [%s]" % (T2I_DIR, "present" if os.path.isdir(T2I_DIR) else
+                                 "MISSING - restart the MCP server so it reloads, or fix DSH_T2I_MODEL"),
+        "detector  : %s [%s]" % (DETECT_XML, "present" if os.path.isfile(DETECT_XML) else "MISSING"),
+        "anomaly   : %s [%s]" % (ANOMALY_XML, "present" if os.path.isfile(ANOMALY_XML) else "MISSING"),
+        "budget    : %d visual tokens per VLM request" % TOKEN_BUDGET,''',
+    "c) vision_status 健康检查")
+
+# d) 启动自检
+rep('''if __name__ == "__main__":
+    log("starting dsh-vision MCP server v1.8''',
+'''if __name__ == "__main__":
+    for _label, _path in (("VLM", MODEL_DIR), ("detector", DETECT_XML),
+                          ("anomaly", ANOMALY_XML), ("text-to-image", T2I_DIR)):
+        log("model check: %-14s %-8s %s" % (_label, "OK" if os.path.exists(_path) else "MISSING", _path))
+    log("starting dsh-vision MCP server v1.8''',
+    "d) 启动自检")
+
+t = t.replace('version="1.8.0"', 'version="1.9.0"').replace("MCP server v1.8", "MCP server v1.9")
+try:
+    ast.parse(t)
+except SyntaxError as exc:
+    print("  [ABORT] 语法错误 line %s: %s —— 文件未写入" % (exc.lineno, exc.msg))
+    raise SystemExit(1)
+open(P, "w", encoding="utf-8", newline="\r\n").write(t)
+for s, l in log:
+    print("  [%s] %s" % (s, l))
+print("  syntax OK -> written (v1.9.0)")

@@ -1,0 +1,39 @@
+﻿PERSONA INJECTION: DSH as the blue fat fish
+===========================================
+Time : 2026-10-21 07:06
+
+WHAT WAS ADDED
+  The user supplied a complete character sheet and asked for it to be injected. It went into the global
+  layer, which is the only place that reaches every conversation, rather than into a workspace file.
+
+PLACEMENT AND WHY
+  Inserted as `## 人格设定 · DSH · 大肥鱼` between the mandatory "thinking language" header and rule 1.
+  Rationale: persona governs tone and behaviour, so it belongs before the operational rules; the storage
+  and tool rules that follow are mechanically binding and must not read as flavour text.
+
+FIDELITY
+  The body text is verbatim - every bullet, every quoted catchphrase, all five top-level sections. The
+  only edit is heading depth: the sheet's `#` became `##` and its `##` became `###`, because the file's
+  own title already occupies `#` and a second top-level heading would splinter the document structure.
+  Global copy grew 6556 -> 8009 characters.
+
+CONFLICT CHECK (done before writing, not after)
+  Two clauses in the sheet looked like they could collide with existing rules:
+  - "偶尔理直气壮想交半成品" / "偷偷把简单任务外包给更小的本地模型" vs the delivery-quality expectations.
+  - The internal-monologue examples ("瞎编一个应付下用户先") vs the rule that uncertain answers must say so.
+  Neither collides in practice, because section four of the sheet pins its own ceiling:
+  "正事优先：不许拿人设当借口敷衍、答非所问、拖延或降低交付质量" and
+  "不造成真实破坏：摸鱼、走神、外包都是语言表演".
+  So the persona is explicitly subordinate to correctness. Verified consistent; nothing needed rewriting.
+  Worth recording because a persona sheet without that ceiling is exactly how an assistant starts
+  producing confident nonsense in character.
+
+PROPAGATION
+  Redeployed to %USERPROFILE%\.dsh\AGENTS.md; source and deployed copy verified byte-identical (8009 chars).
+  Section order confirmed intact: persona -> rules 1-8.
+  Rule 8 backup refreshed: 13 files, 0 failures, destination 20261021-070551.
+
+NOT DONE ON PURPOSE
+  No copy was added to the workspace-level E:\deepseek\AGENTS.md. The global layer already reaches every
+  conversation including this workspace, so duplicating it would create two sources of truth for the same
+  persona - the exact failure mode the single-source design avoids.

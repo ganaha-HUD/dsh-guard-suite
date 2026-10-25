@@ -1,0 +1,48 @@
+﻿QWEN-IMAGE PRETEST: MODEL FORMAT CONFIRMED GOOD, ONLY THE ENCODER IS MISSING
+==========================================================================
+Time : 2026-10-21 00:25
+
+CONTEXT
+  Checkpoint fired 45 minutes after the download restarted on huggingface.co (behind the user's VPN).
+  VAE and diffusion finished; the encoder was at 13.4%. Rather than idle, I pre-tested sd.cpp against
+  the two finished files with a deliberately nonexistent --llm path, so that the error message would
+  reveal whether the diffusion weights and VAE are recognised at all.
+
+COMMAND
+  sd-cli.exe --diffusion-model <...>/diffusion/qwen-image-2.1-UC-Q4_K_M.gguf
+             --vae <...>/vae/qwen_image_2.1_vae_bf16.safetensors
+             --llm D:\nonexistent-placeholder.gguf
+             -p test -W 256 -H 256 --steps 1 --offload-to-cpu -o ...
+
+RESULT - EVERYTHING THAT MATTERS WORKS
+  ggml_vulkan: 0 = Intel(R) Arc(TM) B370 GPU | uma: 1 | fp16: 1 | int dot: 1 | KHR_coopmat
+  [I] load ...qwen-image-2.1-UC-Q4_K_M.gguf using gguf format            <- diffusion readable
+  [I] load ...qwen_image_2.1_vae_bf16.safetensors using safetensors    <- VAE readable
+  [I] Version: Qwen Image 2.1                                           <- architecture matched
+  [I] Weight type stat:            q4_K: 165 | q6_K: 64 | bf16: 306
+  [I] Diffusion model weight stat: q4_K: 165 | q6_K: 64 | bf16:  68
+  [I] VAE weight type stat:                     bf16: 238
+  [I] flash attention auto: Vulkan0 -> off (probe: normal 2.439 ms, flash 2.617 ms)
+  [I] conv2d direct auto:  Vulkan0 -> off (im2col 0.371 ms, direct 0.636 ms)
+  [I] conv3d direct auto:  Vulkan0 -> off (im2col 0.802 ms, direct 1.517 ms)
+  [E] Conditioner model tensor 'text_encoders.llm.model.embed_tokens.weight' not in model metadata
+  [E] model metadata validation failed / new_sd_ctx_t failed
+
+  The single failure is the conditioner, i.e. the text encoder I deliberately pointed at a missing file.
+  Conclusion: the GGUF quantisation and the VAE are both accepted, the architecture is identified as
+  Qwen Image 2.1, and the Vulkan backend self-tunes attention/conv kernels on the iGPU. The download did
+  not produce a subtly wrong artifact.
+
+  Also useful: the auto-probe chose the im2col conv path and non-flash attention on this GPU, which is
+  the sane choice for an 80-EU integrated part.
+
+STATE ON DISK
+  vae/qwen_image_2.1_vae_bf16.safetensors          644.2 MB   complete
+  diffusion/qwen-image-2.1-UC-Q4_K_M.gguf         4391.2 MB   complete
+  text_encoder/qwen3vl_8b_heretic-Q4_K_M.gguf.part  664 MB    in progress (~13.4%, ~36 min left at 1.9 MB/s)
+  one download process alive; sd-cli.exe present at D:\AI_file\tools\stable-diffusion-cpp\
+
+NEXT
+  A second checkpoint is set for 01:05 local. When the encoder lands: render a real 512x512 image at
+  4 steps with --cfg-scale 6.0, record the wall time, then write the install record, run the storage
+  self-test, do the archival pass, and finally shut the machine down as the user asked.

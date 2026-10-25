@@ -1,0 +1,57 @@
+﻿WORKSPACE PLANNING FOR TWO NEW WORKSPACES
+=========================================
+Time : 2026-10-14 22:00
+
+WHAT WAS FOUND
+  E: now holds three workspaces: E:\deepseek (the established one, 2013 files), plus two new EMPTY
+  folders the user created: E:\Deepseek_kaka and E:\Deepseek_kolp.
+
+PREREQUISITE FIX (had to come first)
+  The tools scripts hard-coded $Root = 'E:\Deepseek'. Copying one into a new workspace would have made
+  it create conversation folders back in the OLD workspace. All four tools scripts now derive the root
+  from their own location:
+      if (-not $Root) { $Root = Split-Path -Parent $PSScriptRoot }
+  An explicit -Root still overrides, so behaviour in E:\deepseek is unchanged. Verified by running the
+  copied script inside E:\Deepseek_kaka: it created conv-* under kaka in all six categories while
+  E:\deepseek\deliverables stayed at 5 entries. The test folders were then removed.
+  While doing this I also found and repaired real corruption: the "rebuilt" header comment of three
+  scripts had been written through Node with the Chinese text mangled into question marks - the
+  PowerShell-to-Node stdin hazard already documented in rule 0. Rewritten with a BOM-aware PowerShell
+  write; question marks are now zero and the CJK count went back up.
+
+WHAT WAS PLANNED IN EACH NEW WORKSPACE
+  deliverables\ logs\ scripts\ workspace\ data\ archive\   the six category folders (global rule 1)
+  reference_file\                                          the user's drop folder (agent read-only)
+  tools\New-ConversationWorkspace.ps1                      the one workspace-agnostic tool
+  AGENTS.md                                                local rules: inherits the global layer, states the
+                                                           workspace path, gives the command to run, and
+                                                           points at E:\Deepseek as the authority
+  README.md                                                index, commands and a source table
+
+DELIBERATE DESIGN DECISION: NO policy\ COPY
+  The rule set lives once, in E:\Deepseek\policy. Copying it into every workspace would create N
+  divergent copies - the exact failure mode the single-source design exists to prevent. The new
+  workspaces therefore inherit the global injected layer and REFERENCE the authority, and their
+  AGENTS.md says explicitly not to maintain a local rule copy. Test-StoragePolicy.ps1 and
+  Backup-Rules.ps1 were consequently NOT copied, because both are bound to a workspace that actually
+  owns a policy (they would report a missing policy file elsewhere).
+
+VERIFICATION
+  Tool syntax OK and UTF-8 BOM intact in both copies; category folders and both markdown files present;
+  the run test above proves the root inference.
+  Backup refreshed per rule 8 because tools\ changed.
+
+TWO PRE-EXISTING WARNINGS IN E:\deepseek, LOOKED AT, NOT TOUCHED
+  1. eim_config.toml sits in the workspace root, outside the allow list. It is an ESP-IDF installer
+     (EIM) configuration for ESP32-S3 / IDF v5.3.6, i.e. the user's tooling, not agent output. Left in
+     place; the user should decide whether to allow-list it or move it (EIM expects it in the project
+     root, so allow-listing may be the right answer).
+  2. Non-ASCII file names under workspace\ (wind-sensor manual, 硬件连接.txt, "I2C - 副本.OBJ", ...).
+     These are user materials from another conversation, not agent output, so nothing was moved. The
+     rule-compliant destination would be reference_file\, which exempts user files from the ASCII rule.
+  Neither is a defect in the rules themselves; both are placement issues in user-owned material.
+
+OPEN QUESTION FOR THE USER
+  The "purpose" row of each new workspace's AGENTS.md is a placeholder. Tell me what kaka and kolp are
+  for and I will fill it in (and can tailor the README's source table if either workspace needs its own
+  rules after all).

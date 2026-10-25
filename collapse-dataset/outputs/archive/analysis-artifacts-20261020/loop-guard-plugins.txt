@@ -1,0 +1,275 @@
+LOOP / REPETITION GUARD PLUGINS - DETAIL
+=======================================
+
+### dsh-dupguard   HTTP 200
+    latest      : 1.9.1
+    description : Real-time repetition guard for DeepSeek Harness (DSH): stops generation once the same string repeats >=10 times in a row, with one relaxed threshold for fenced/inline/indented code, table- or module-driven repeat counts, and a derived detection window wri
+    license     : MIT
+    repository  : {"url":"git+https://github.com/zqh260619/dsh-dupguard.git","type":"git"}
+    homepage    : https://github.com/zqh260619/dsh-dupguard#readme
+    versions    : 27
+    dependencies: {"@deepseek-ai/schemastery":"^3.18.1"}
+    peerDeps    : {}
+    engines     : {"node":">=20"}
+    keywords    : ["dsh-plugin","deepseek-harness","dsh","repetition-detection","loop-detection","anti-repetition","output-guard","llm","client-plugin","防复读","重复检测"]
+    README      : 26093 chars
+      | # dupguard · DSH 大模型重复输出守卫
+      | [![npm version](https://img.shields.io/npm/v/dsh-dupguard)](https://www.npmjs.com/package/dsh-dupguard)
+      | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+      | [![CI](https://github.com/zqh260619/dsh-dupguard/actions/workflows/ci.yml/badge.svg)](https://github.com/zqh260619/dsh-dupguard/actions/workflows/ci.yml)
+      | [![dsh-plugin](https://img.shields.io/badge/topic-dsh--plugin-0969da)](https://github.com/topics/dsh-plugin)
+      | [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/zqh260619/dsh-dupguard)
+      | [![dsh.so risk](https://www.dsh.so/badge/dsh-dupguard.svg)](https://www.dsh.so/artifact/dsh-dupguard/)
+      | > **dupguard** 是 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) 的实时重复输出守卫插件：最新输出中同一字符串连续重复 **10 次及以上**（可配置）时立即停止本次生成，已生成内容正常提交为助手消息。
+      | >
+      | > **dupguard** — a real-time repetition guard for [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness): stops model generation as soon as the sa
+      | <sub>徽章由 npm / GitHub / dsh-plugin.org / dsh.so 各自生成；本插件的版本-兼容矩阵见
+      | [兼容性报告](docs/compatibility-report.md)。问题与建议请提到 [GitHub Issues](https://github.com/zqh260619/dsh-dupguard/issues)。</sub>
+      | ## 快速开始 / Quick Start
+      | **前置要求**：DSH **≥ 0.1.2-rc.1**（一条命令安装；宿主 API 下限为 ≥ 0.1.1-rc.1）、**Node ≥ 20**、以及你要装到的
+      | profile 名（下面示例用 `web`）。
+      | ```bash
+      | dsh plugin --profile web add dsh-dupguard      # 把 web 换成你的 profile 名
+      | ```
+      | **重启 DSH 即生效**（宿主代码只在进程启动时加载）。看到这两处就说明装好了：
+      | 1. 设置页多出「重复守卫」分节，底部显示 `设置通道：ready｜构建 1.9.1｜自动派生：检测窗口 …`；
+      | 2. 宿主日志出现 `[dupguard] 生效参数：…`（**判断设置是否真的生效，只认这一行**）。
+      | 默认值开箱可用：连续重复 **≥ 10 次**即截停（已生成内容照常提交为助手消息），思考文本一并检测，**代码区域**
+      | （围栏代码块、行内代码、缩进代码块三类统一）内按 **3 倍**放宽。想调整就在设置页改——**改完无需重启**
+      | （写回 `cordis.patch.yml`，宿主自行热读取）。
+      | > 桌面版（Electron）：请在**应用内「设置 → 插件」**安装（`desktop` profile 由应用独占管理，CLI 会被拒绝）。
+      | > 卸载 / 升级：`dsh plugin --profile web remove|update dsh-dupguard`；其它安装方式（本地仓库 `--patch` 挂载 /
+
+### dsh-local-loop-fuse   HTTP 200
+    latest      : 0.8.3
+    description : DSH 循环护栏：① assistant-stream 字符重复检测（可 abort）；①b 低多样性高重复（末窗 + 滑窗两支，抓「带噪声的交替空转」与「正常推理里夹一段空转」——① 线的精确匹配结构上抓不到它们）；①c ① 线命中时注入「停止」类词 + 预注册观测（注入是温和动作，先于掐断）；② 行动层「无进展」停滞检测；②b 同参工具调用连击（按**动作参数**判定，忽略 description 之类自注）；③ 反复卡住达阈值 ⇒ agent.cancel() 真切断；⑤ 零正文 turn（只有思考
+    license     : MIT
+    repository  : {"url":"git+https://github.com/zimuhuan-code/dsh-local-loop-fuse.git","type":"git"}
+    homepage    : https://github.com/zimuhuan-code/dsh-local-loop-fuse#readme
+    versions    : 10
+    dependencies: {}
+    peerDeps    : {"@deepseek-ai/dsh-llm":">=0.1.5-rc.1"}
+    engines     : {"node":">=20"}
+    keywords    : ["dsh","dsh-plugin","deepseek-harness","loop","guard","ftllm"]
+    README      : 40690 chars
+      | # dsh-local-loop-fuse（原名 dsh-loop-guard，2026-10-03 改名）
+      | > **曾用名与同名包说明**
+      | > 本项目原名 `dsh-loop-guard`，2026-10-03 起改用现名 `dsh-local-loop-fuse`。
+      | > ⚠️ npm 上另有一个**与本项目无关**的 `dsh-loop-guard`（作者 `carbide`）—— 本项目**没有使用、也没有派生**它的任何代码。
+      | > **可自行复核的比对**（2026-10-03，对照它 `dsh-loop-guard@0.1.1` 的公开 tarball）：
+      | > 非平凡行完全重合 **0** 行 · 长度 ≥ 20 的字符串常量重合 **0** 个 · 标识符交集仅 66 个通用词（`push` / `return` / `agent` …，
+      | > 双方的专有标识符如 `REPEAT_CALL_DENIED` 与 `ABORT-VIA-CANCEL` 互不相交）· 本项目**零依赖**
+      | > （它依赖 `@deepseek-ai/schemastery` + `@deepseek-ai/dsh-brand`）· 检测机制亦不同：它拦"同一工具调用签名重复"（工具执行前），
+      | > 本项目检测 **assistant 文本 / 推理流的重复** 并通过请求级 `AbortSignal` 中止该 turn。
+      | > 改名正是为了避免混淆，以及避免 `dsh plugin add dsh-loop-guard` 误装到别人的实现。请只以本包名或 `link:` 方式安装本项目。
+      | DSH 原生插件：**输出 / 思考循环护栏**。三条线：
+      | ① 监听 assistant 流式增量，对 `reasoning-delta` / `text-delta` 做宽松重复检测（**强信号**，
+      | 累计命中达 `textStrikesBeforeCancel` ⇒ `agent.cancel({kind:'hook'},{keepInbox:true})` 掐断当前 turn）；
+      | ② 行动层 **「无进展」判据**（v0.4.0 重写：连续 `stallMinutes` 分钟**没有任何进展事件** ⇒ 判停滞）；
+      | ③ 同一会话窗口内**强信号**累计达 `strikesBeforeCancel` ⇒ 真切断。
+      | **① 线已上膛（`dryRun=false`，2026-09-29 维护者定）**。
+      | - 版本：**v0.8.3**（2026-10-07：在 v0.8.2 的 **①b 低多样性** + **①c 注入**之上补 6 条 ——
+      |   ①c 额度用尽可配置**真掐断** / ⑤线**会话终身硬顶** / TTL 起点随 DEFER 重置 / `frame.turn` 注释更正 + 测试防线）
+      |   ⚠️ `0.8.0` **未发布**，⑤ 线随 `0.8.1` 一起发。
+      | - ⚠️ **本包 `index.js` 末尾有一个可选挂载点**（不属于本项目功能，**将来会移除**）——
+      |   见下方「关于 `index.js` 末尾的可选挂载点」一节。
+      | - 上一版 **v0.7.6**（2026-10-04：**去掉写死的本机绝对路径** —— 公开发布后自查发现，原默认落点全是
+      |   作者本机路径（`<workspace>/.tmp/…`、`<插件目录>/samples`），**别人装上后写日志与 dump 全部静默失效**
+      |   （两者都在 `try{}catch{}` 里 ⇒ 不报错、不崩 —— 最坏的失败形态：以为在跑，其实什么都没记）。
+      |   现默认改为**按本实例 `DSH_HOME` 派生**：`${DSH_HOME}/logs/dsh-local-loop-fuse/`；
+      |   并给 `appendLine` 补了 `mkdirSync`（旧默认值指的本机目录恰好已存在，换个环境就不会写日志）；
+
+### @mrweicodes/dsh-loop-guard   HTTP 200
+    latest      : 1.0.9
+    description : Thinking-loop guard for dsh: observes the llm/stream waterfall and breaks a model that degrades into a loop. Detects two per-call shapes (reasoning-only calls, restated-material calls) and re-fires instead of latching; plus two mid-stream breakers that en
+    license     : MIT
+    repository  : {"url":"git+https://github.com/MrWeiCodes/dsh-loop-guard.git","type":"git"}
+    homepage    : https://github.com/MrWeiCodes/dsh-loop-guard#readme
+    versions    : 4
+    dependencies: {"@deepseek-ai/schemastery":"^3.18.1"}
+    peerDeps    : {"@deepseek-ai/cordis":"^4.0.2","@deepseek-ai/dsh-llm":">=0.1.2-rc.1 <0.1.3 || >=0.1.3-alpha.2 <0.1.4 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-alpha.1 <0.2.0 || >=0.1.7-alpha.1 <0.2.0 || >=0.2.0-alpha.1 <0.3.0","@deepseek-ai/dsh-agent":">=0.1.2-rc.1 <0.1.3 || >=0.1.3-alpha.2 <0.1.4 || >=0.1.5-alpha.1 <0.2.0 || >=0.1.6-alpha.1 <0.2.0 || >=0.1.7-alpha.1 <0.2.0 || >=0.2.0-alpha.1 <0.3.0"}
+    engines     : {}
+    keywords    : ["dsh","dsh-plugin","deepseek-harness","plugin","guard","thinking-loop","reasoning","repetition","circuit-breaker","output-guard"]
+    README      : 17628 chars
+      | # dsh-loop-guard — DSH 思考循环守护
+      | > 为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）提供的思考循环守护插件：模型陷入「只想不做」的退化循环时**自动打断并注入纠正提示，任务继续往下走**，不必再手动中止
+      | **🌏 中文 | [English](README_EN.md)**
+      | `dsh` · `dsh-plugin` · `plugin` · `guard` · `thinking-loop` · `reasoning` · `repetition` · `AI agent` · `思考循环` · `死循环` · `推理退化`
+      | <!-- keywords: dsh, dsh-plugin, deepseek harness, plugin, guard, thinking-loop, reasoning, repetition, circuit-breaker, ai agent, 思考循环, 死���环, 推理退化 -->
+      | ## 简介
+      | 长上下文 + 高 reasoning effort 下，模型会**退化**：推理里开始出现低熵重复（`好。执行。好。`、`Write. / Output. / Let me write. / Go.` 这种短句轮转），然后停不下来。
+      | 麻烦的是 DSH 自带的 `guard/` 家族**抓不到这种情况**——它们都围绕工具调用：
+      | | 内置 guard | 挂载点 | 能抓什么 |
+      | |---|---|---|
+      | | `guard/timeout-policy` | `tools/execute` | 工具调用超时 |
+      | | `guard/repeat-tool-reminder` | `tools/post-execute` | 重复的同一个工具调用链 |
+      | 而退化循环的特征恰恰是**完全不调工具**：只有 `reasoning-delta`，零 `text-delta`、零 `tool-call-delta`。于是：
+      | - 两个 guard 都不触发；
+      | - agent-loop 的 `turn()` 从**已完成的消息**推导 `StepEndReason`，流不结束 → step 不 settle → `turnEnds` 永远为 null → `while (true)` 永不 break；
+      | - **回合停不下来，只能由你手动中止**——而界面上只显示「思考中」，看起来和认真推理没区别。不点开 thinking 块根本察觉不到它在空转。
+      | 本插件接管 `llm/stream` 瀑布流，按每次模型调用的 chunk 组成做判定，在退化发生时**从流内部切断**，让回合正常结束。
+      | ![效果：思考循环被截断，并注入纠正提示](assets/loop-break-notice.png)
+      | 上图是实际运行效果：推理块里反复出现 `OK. / Writing. / Let me write. / Go. / Executing. / Now.` 的轮转，插件在重复累积到阈值时截断该次调用，并在下方注入一条提示，让模型回到原本的任务。
+      | ### 0.1.7 起聊天区不再显示那条提示
+      | DSH **0.1.7** 把「上下文」类消息**从聊天区可见行里排除了**（`isVisibleChatNode`，硬编码 `kind !== "context"`），所以注入的纠正提示在聊天区**完全没有**——不是被折叠，是压根不渲染。
+      | 0.1.6 及更早没有这个过滤，那时它正常显示为「上下文注入」行。
+      | 提示没有丢，两处能看到：
+      | | 位置 | 看到什么 |
+      | |---|---|
+      | | **会话历史 / 轨迹视图** | 该消息原样列出，带「**上下文**」标签和完整正文 |
+
+### dsh-task-reliability   HTTP 200
+    latest      : 0.4.9
+    description : DSH 任务可靠性保障插件：模型超时/请求失败自动重试、任务未完成自动继续、思考重复干预、休眠重启后任务恢复、锁屏/休眠唤醒自动恢复、ask 超时自动继续、自主决策模式、远程触发、/task 斜杠命令。DSH web plugin: auto-retry, auto-continue, verification agent, repeat detection, resume after restart, stall watchdog, ask timeout, autopilot, remote trig
+    license     : MIT
+    repository  : {"url":"git+https://github.com/baosfeng/my-dsh-plugins.git","type":"git"}
+    homepage    : https://github.com/baosfeng/my-dsh-plugins#readme
+    versions    : 13
+    dependencies: {"dsh-shared":"^0.1.4"}
+    peerDeps    : {"react":"^18.2.0 || ^19.3.0","cordis":"^4.0.0-rc.10"}
+    engines     : {"node":">=22"}
+    keywords    : []
+    README      : 2555 chars
+      | # dsh-task-reliability
+      | **dsh-task-reliability**：DSH 任务可靠性保障——模型超时/请求失败自动重试、任务未完成自动继续、思考重复检测干预、休眠/重启与锁屏后任务恢复、ask 超时自动继续、输出截断自动补完、独立完成度校验 agent、自主决策模式（出行防中断）与远程触发接口。
+      | ![任务可靠性面板](https://unpkg.com/dsh-task-reliability/assets/screenshot-panel.png)
+      | ## 功能
+      | - **任务注册表**：手动注册或自动跟踪任务，持久化到 `$DSH_HOME/task-reliability.json`（原子写 + 防抖）。
+      | - **超时/失败自动重试**：接管 `agent/request-error` 的瞬态失败（TIMEOUT / ETIMEDOUT / ECONNRESET / TRANSPORT），指数退避 + 次数上限。
+      | - **任务自动继续**：回合即将结束时若存在活动任务则注入继续指令，带防死循环护栏（循环上限/冷却/全局速率限制）。
+      | - **输出截断自动补完**：普通对话回合因输出上限或异常中断且输出不完整时自动注入继续指令（受每会话上限 + 冷却约束；用户主动停止不自动继续）。
+      | - **完成度校验 agent**：开启校验模式后，会话结束时用独立 agent 判断任务是否真正完成，未完成自动唤醒继续（带校验结论）。
+      | - **思考重复干预**：检测 reasoning 段落重复（n-gram 相似度），终止循环回合并注入分级打断指令。
+      | - **休眠/重启/锁屏恢复**：启动时扫描活动任务经 `agents.resume` 恢复会话并注入继续指令；停滞看门狗定期扫描长时间无进展的任务（锁屏/休眠/断网）自动唤醒，无需重启 DSH。
+      | - **ask 超时自动继续**：`ask_user_question` 长时间无响应（默认 30 分钟）自动降级——记录待确认问题 + 注入继续指令 + 模拟回答，任务不挂起。
+      | - **自主决策模式**：出行模式拦截 `ask_user_question` 自动决策，问题收集到待确认列表供回来批量回答，审批策略切换为自动批准。
+      | - **远程触发接口**：`POST /task-reliability/api/trigger` 支持注册任务 / 切换模式 / 回答待确认问题 / 查询状态。
+      | - **/task 斜杠命令**：`/task` 查看状态、`/task continue` 继续活动任务、`/task answer <id> <text>` 回答待确认问题、`/task autopilot on|off` 切换自主决策、`/task register <描述>` 注册任务。
+      | ## 安装
+      | > 💡 **npm 安装（普通用户推荐）**：`dsh plugin --profile web add dsh-task-reliability --trust-lockfile`——无需克隆本仓库；依赖 `dsh-shared` 随 npm 自动安装。link 方式供本仓库开发者使用。
+      | ```bash
+      | dsh plugin --profile web add link:<本目录绝对路径>
+      | ```
+      | ## 使用
+      | 侧边栏「任务可靠性」页签可注册任务、打开「完成度校验」与「自主决策」开关。远程触发示例：
+      | ```bash
+      | curl -X POST http://127.0.0.1:3080/task-reliability/api/trigger \
+      |   -H "Content-Type: application/json" \
+      |   -d '{"action":"mode","autopilot":true}'
+
+### dsh-guard-repeat-output   HTTP 200
+    latest      : 2.1.7
+    description : Host-side degeneration guard for DSH: strips garbage code points from the stream, detects repetition collapse and discards the attempt before any of it enters history, and can retroactively decontaminate a session that was already poisoned.
+    license     : MIT
+    repository  : {"url":"git+https://github.com/Mcd0LUO/dsh-guard-repeat-output.git","type":"git"}
+    homepage    : https://github.com/Mcd0LUO/dsh-guard-repeat-output#readme
+    versions    : 14
+    dependencies: {}
+    peerDeps    : {"@deepseek-ai/dsh":">=0.1.6-alpha.2 <0.3.0-0"}
+    engines     : {"node":">=20"}
+    keywords    : ["dsh","deepseek-harness","guard","repetition","cordis-plugin"]
+    README      : 11864 chars
+      | # dsh-guard-repeat-output
+      | **Stops a model's repetition collapse before it burns your context.**
+      | A host-side guard for [DSH](https://github.com/deepseek-ai) that watches the model's output
+      | stream and cuts off degenerate repetition the moment it starts.
+      | **Language:** English | [简体中文](./README.zh-CN.md)
+      | ---
+      | ## The problem
+      | Sometimes a model gets stuck. Instead of finishing its thought, it starts emitting the same
+      | phrase over and over:
+      | ```
+      | let me write the call let me write the call let me write the call let me write ...
+      | ```
+      | This is not a rare edge case. Two real incidents captured on a production server:
+      | | Length | Shape |
+      | |---|---|
+      | | 1,371,962 chars | `"Let me produce."` × 27,269 — pure repetition |
+      | | 250,506 chars | `"Let me write."` × 1,958 alternating with `"Let me write the call."` × 1,952 |
+      | Nothing in the loop noticed. The turn kept generating — and billing — until the model happened
+      | to stop on its own, or a human pressed cancel. Every one of those tokens then sits in the
+      | context window, crowding out the work that actually mattered.
+      | ## What it does
+      | In about two days on a production server it caught **12 real collapses**: all 12 recovered,
+      | none failed, and **none of the discarded text ever reached the session history**.
+      | The guard evaluates a sliding window of the stream as it arrives, and acts on three levels.
+      | **While the stream is live:**
+      | 1. **Sanitize** — blacklisted code points (control characters, U+FFFD, zero-width filler, lone
+
+### dsh-repeat-tool-breaker   HTTP 200
+    latest      : 0.11.4
+    description : Requires dsh >= 0.1.7 (session format 4); on dsh 0.1.5 use dsh-repeat-tool-breaker@0.7. Escalating repeat detection for dsh: a synchronous ctx.tools.guard gate that counts semantic fingerprints (exact/cmd/net/host/sink) over a per-agent sliding window, wa
+    license     : MIT
+    repository  : {"url":"git+https://github.com/snailium/dsh-repeat-tool-breaker.git","type":"git"}
+    homepage    : https://github.com/snailium/dsh-repeat-tool-breaker#readme
+    versions    : 36
+    dependencies: {"@deepseek-ai/schemastery":"^3.18.4"}
+    peerDeps    : {"@deepseek-ai/dsh":"^0.1.7-rc.2 || >=0.2.0-rc.1 <0.2.1-0"}
+    engines     : {"node":">=20"}
+    keywords    : ["dsh","dsh-plugin","deepseek-harness","cordis","guard","loop","repeat","agent"]
+    README      : 69744 chars
+      | # dsh-repeat-tool-breaker
+      | [![CI](https://github.com/snailium/dsh-repeat-tool-breaker/actions/workflows/ci.yml/badge.svg)](https://github.com/snailium/dsh-repeat-tool-breaker/actions/workflows
+      | [![npm](https://img.shields.io/npm/v/dsh-repeat-tool-breaker.svg)](https://www.npmjs.com/package/dsh-repeat-tool-breaker)
+      | [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+      | [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
+      | > ### ⚠️ Supported dsh: `^0.1.7-rc.2 || >=0.2.0-rc.1 <0.2.1-0`
+      | >
+      | > **0.8.x covers the dsh 0.1.7 line and dsh 0.2.0 (from rc.1, up to but not including 0.2.1).
+      | > On dsh 0.1.5, install `dsh-repeat-tool-breaker@0.7`.**
+      | > The same range is declared as a **peer dependency** on `@deepseek-ai/dsh`, so a resolver can
+      | > see it; it is marked `optional` because dsh is provided by the host at runtime. Note the
+      | > `0.2.0-rc.1` lower bound rather than `0.2.0`: semver admits a prerelease only when a
+      | > comparator in the same set names one, so `>=0.2.0` would reject every 0.2.0 rc.
+      | > 0.1.7 replaced the settings API, so one build cannot register a settings page on both
+      | > generations — the two are served by two lines rather than by a version probe.
+      | >
+      | > On dsh 0.1.5, **0.8.x still detects repeats, still blocks shell HTTP and still delivers its
+      | > advisories** (verified on 0.1.5-rc.2: the advisory persists with this release's message
+      | > source). The one thing that is lost is the **settings page**, because the Host no longer
+      | > registers a namespace there and the card needs 0.1.7's client services. Use `@0.7` on
+      | > 0.1.5 if you want the settings UI.
+      | Escalating repeat detection for an agent's tool calls. A local
+      | [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH) plugin
+      | that registers one synchronous gate on the public `ctx.tools.guard` API. A
+      | measure repeated inside the agent's sliding window is not stopped at the first
+      | threshold: it escalates — a light warning at 7, a written-summary demand at 11,
+
+### dsh-completion-guard   HTTP 200
+    latest      : 0.9.0
+    description : A task-contract and completion-certification layer for DeepSeek Harness.
+    license     : Apache-2.0
+    repository  : {"url":"git+https://github.com/GreenLv/dsh-completion-guard.git","type":"git"}
+    homepage    : https://github.com/GreenLv/dsh-completion-guard#readme
+    versions    : 24
+    dependencies: {}
+    peerDeps    : {"@deepseek-ai/cordis":">=4.0.4","@deepseek-ai/dsh-llm":">=0.2.0-rc.2","@deepseek-ai/dsh-goal":">=0.2.0-rc.2","@deepseek-ai/dsh-jobs":">=0.2.0-rc.2","@deepseek-ai/dsh-agent":">=0.2.0-rc.2","@deepseek-ai/dsh-tools":">=0.2.0-rc.2","@deepseek-ai/dsh-session":">=0.2.0-rc.2","@deepseek-ai/dsh-commands":">=0.2.0-rc.2","@deepseek-ai/dsh-tool-goal":">=0.2.0-rc.2"}
+    engines     : {"dsh":">=0.2.0-rc.2","node":">=22"}
+    keywords    : ["deepseek-harness","dsh-plugin","task-contract","completion-certification","hooks","typescript"]
+    README      : 28019 chars
+      | # dsh-completion-guard
+      | [简体中文](README.zh-CN.md)
+      | An add-on for DeepSeek Harness (DSH) that keeps a task's requirements and checks them before the task is marked complete. It restores the same checklist after a resu
+      | > **0.9.0 requires DSH `>=0.2.0-rc.2` and supports the official Desktop app.** For an existing installation, stop the relevant writers and preserve the old installed
+      | ![Task-contract clauses and bounded evidence pass through a checkpoint before a completion certificate is issued](assets/social/completion-guard-hero.png)
+      | ## Quick start
+      | Choose the applicable path before running an installation command:
+      | - **Fresh installation, no old Guard sessions:** stop the host, upgrade to DSH `0.2.0-rc.2` or later, install Guard below, and rebuild the host lock before starting.
+      | - **Existing installation:** first stop the relevant writers and preserve the old installed package and effective mode sources; prepare and freeze the old-session in
+      | Install in the profile you want to protect after completing the applicable preparation:
+      | ```sh
+      | dsh plugin --profile web add dsh-completion-guard@0.9.0
+      | ```
+      | **Keep the host stopped while upgrading and checking the installed graph below.** The lock records the package versions and installation directories DSH actually use
+      | Check that each command's JSON output says `status: "supported"`. A failure reports a specific reason and exits nonzero. For a later compatible host, add `--rebind-r
+      | ```sh
+      | DSH_RUNTIME_ROOT=/absolute/path/to/.dsh-runtime
+      | DSH_PROFILE_ROOT=/absolute/path/to/.dsh/profiles/web
+      | GUARD_HOST_LOCK="$DSH_PROFILE_ROOT/node_modules/.bin/dsh-completion-guard-host-lock"
+      | "$GUARD_HOST_LOCK" inspect --runtime-root "$DSH_RUNTIME_ROOT" --profile-root "$DSH_PROFILE_ROOT"
+      | "$GUARD_HOST_LOCK" inject --runtime-root "$DSH_RUNTIME_ROOT" --profile-root "$DSH_PROFILE_ROOT"
+      | dsh --profile web --dump-config | "$GUARD_HOST_LOCK" verify-dump --runtime-root "$DSH_RUNTIME_ROOT" --profile-root "$DSH_PROFILE_ROOT" --dump-config -
+      | ```
+      | On Windows, run the same three subcommands through `dsh-completion-guard-host-lock.cmd` in the Web settings directory's `node_modules\.bin` directory and use Windows
+      | For Desktop, install through the app's bundled CLI and bind `--profile desktop` to its `app.asar` and actual profile directory. Its CLI does not offer `--dump-config
+      | For an existing installation, complete the migration guide’s `adopt` and `verify` using the frozen old receipt now, while writers remain stopped. Host-lock verificat

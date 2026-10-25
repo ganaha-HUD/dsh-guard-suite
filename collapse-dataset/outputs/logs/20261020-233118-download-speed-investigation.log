@@ -1,0 +1,45 @@
+﻿DOWNLOAD SPEED INVESTIGATION - WHAT WORKED AND WHAT DID NOT
+==========================================================
+Time : 2026-10-20 23:31
+
+QUESTION
+  The uncensored Qwen-Image set was downloading at ~208-233 KB/s (9.6 GB = 11-12 h). Is there a faster
+  mirror?
+
+MIRROR SURVEY (measured, not guessed)
+  hf-mirror.com            206  348 KB/s   <- baseline, also the best
+  ai.gitcode.com hf_mirrors 200 341 KB/s   <- works, but no faster than baseline
+  gitcode.com/hf_mirrors   206   91 KB/s
+  hf-api.gitee.com         404
+  modelscope.cn            fast, but hosts ONLY the censored official Qwen-Image (uncensored repos 404)
+  huggingface.co           ECONNRESET (blocked)
+  Conclusion: ~350 KB/s is the ceiling of this network path, not a mirror limitation. No faster source
+  exists for these specific weights.
+
+PARALLEL DOWNLOAD ATTEMPTS (both failed, worth recording so nobody repeats it)
+  v2 segmented downloader: split each file into 8 ranges and fetch them concurrently.
+    - Benchmark said 8 concurrent ranges reached 341 KB/s vs 208 single, so the idea looked sound.
+    - In practice hf-mirror HANGS on 8 concurrent RANGE requests over large spans: the requests open,
+      return 206, and then deliver nothing. All eight .segN files stayed at 0 bytes across two runs.
+    - I first suspected an event race (close firing before end, resolving the promise early and
+      truncating the write). Fixed that - behaviour unchanged. The race was real but not the cause;
+      the stall is server-side.
+    - Verdict: hf-mirror tolerates small concurrent probes but not 8 large concurrent range pulls.
+
+A SELF-INFLICTED PROBLEM WORTH REMEMBERING
+  job_kill terminates the pwsh wrapper, NOT the node child process it spawned. After "killing" the v2
+  job, the node process kept running alongside the v1 downloader, splitting the bandwidth (measured
+  183 KB/s instead of ~350). The symptom was a .part file growing slower than the log claimed.
+  Fix: enumerate node processes by command line and Stop-Process them explicitly:
+      Get-CimInstance Win32_Process -Filter "Name='node.exe'" |
+        Where-Object { $_.CommandLine -match 'download-qwen-image' } | Stop-Process -Force
+  Rule of thumb: after killing any job that spawned a long-lived child, verify with a process listing.
+
+ALSO MISLEADING
+  PowerShell's (Get-Item).Length lagged behind reality for a file being appended by node; node's own
+  fs.statSync showed the true size (18.5 MB while PowerShell said 0). Trust node's stat when auditing
+  an active download.
+
+FINAL CONFIGURATION
+  One single-connection v1 downloader, sequential: VAE 0.63 GB -> diffusion 4.29 GB -> encoder 4.68 GB,
+  resuming from the retained .part. Expect roughly 9-10 hours at ~300 KB/s. Nothing else is running.

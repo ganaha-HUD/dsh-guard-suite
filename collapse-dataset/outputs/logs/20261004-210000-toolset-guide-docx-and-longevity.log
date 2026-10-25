@@ -1,0 +1,46 @@
+TOOLSET GUIDE DOCX + HARDWARE-LONGEVITY RULES
+============================================
+Time : 2026-10-04 22:09
+
+REQUEST
+  1. fold the new tools into the rules
+  2. add a rule that local-AI calls must consider prolonging this computer's life
+  3. produce a DOCX with the tool information, what was installed, the file paths and how to remove it all
+
+RULES (policy v1.5.0)
+  policy\ai-tool-policy.md gained section 10 "硬件寿命" with eight hard rules: prefer NPU/iGPU over CPU,
+  pick the cheapest adequate tool, never warm up or restart the server needlessly (pipelines are cached
+  per device), announce any job above 60 s of sustained load and prefer AC power, do not run heavy jobs
+  concurrently, avoid pointless large writes, monitor the ACPI thermal zone (idle baseline 27.9 C on this
+  machine; MSAcpi_ThermalZoneTemperature is access-denied here), keep the vents clear while charging, and
+  keep long jobs interruptible.
+  AGENTS.md rule 7 gained item 5 and ~/.dsh/AGENTS.md rule 8 gained the matching bullet; redeployed with
+  Install-GlobalPolicy.ps1 (FAIL=0 WARN=0, global file 4610 -> 4702 chars).
+
+DOCX
+  E:\Deepseek\deliverables\conv-20260928-3b54e160\local-ai-toolset-guide-v1.docx  (44 KB, 8 pages)
+  Sections: what this document is / runtime environment / the eight tools / calling rules (routing,
+  trust grading, hard limits) / hardware longevity / what was installed (directories, five models,
+  python packages, the four places outside D:\AI_file that were written) / complete uninstall in four
+  steps with commands and a verification table / reinstall recipe / known limits / version record.
+  Built with python-docx from the bundled runtime; 340 paragraphs, 12 tables.
+  Structure check: scripts\check_office.py verdict pass, with --contains assertions on the key sections.
+
+LAYOUT NOTES AND A FALSE ALARM
+  First render showed the tables running past the right margin. Investigation:
+    1. python-docx only sets cell widths; the table needs w:tblLayout=fixed, w:tblW and an explicit
+       w:tblGrid - added, all 12 tables now 6.0 in (later 5.9 in for slack).
+    2. The first fix looked ineffective because appending a second w:tblW is ignored: the existing
+       element must be edited in place. Corrected.
+    3. The render still showed content shifted right by ~1.1 in, so I measured pixels instead of
+       eyeballing, then rendered a one-paragraph minimal document as a control: it shows exactly the
+       same 2.53 in offset. The renderer raster is offset, the document geometry is correct - the
+       document XML has Letter 12240x15840 twips with 1800 twip left/right margins and 5.9 in tables.
+    4. Table widths were still trimmed to 5.9 in as a safety margin for Word/LibreOffice differences.
+  Conclusion: structural checks pass; pixel-level layout could not be trusted from the renderer, so the
+  document should be opened once in Word/WPS for a final visual confirmation.
+
+ARTEFACTS
+  deliverables\conv-20260928-3b54e160\local-ai-toolset-guide-v1.docx
+  scripts\conv-20260928-3b54e160\build-toolset-guide-docx.py
+  workspace\conv-20260928-3b54e160\docx-preview-v*/ (renders), min-a.docx / min-b.docx (control experiment)

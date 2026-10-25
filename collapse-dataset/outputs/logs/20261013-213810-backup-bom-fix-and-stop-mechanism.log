@@ -1,0 +1,48 @@
+BACKUP TOOL FIXED (BOM) AND AGENT-LOOP STOP MECHANISM RESEARCH
+=============================================================
+Time : 2026-10-13 21:38
+
+PART 1 - THE INTERRUPTED COMMAND, RECONCILED
+  The previous turn's command was interrupted with an unknown outcome, so state was verified before
+  anything else: README.md already carried the Backup-Rules entry and command, storage-policy.json was
+  already v1.4.0 with ruleBackup, output-storage-policy.md already had section 12, tools\Backup-Rules.ps1
+  existed. Only the first backup run had not happened. Nothing was retried blindly.
+
+PART 2 - BACKUP TOOL BUG: MISSING BOM (a real, reproducible defect)
+  Symptom: Backup-Rules.ps1 died with
+      Test-Path : Cannot bind argument to parameter 'LiteralPath' because it is null.
+  although $tpl was assigned on the line above, and the reported line number never matched the file on disk
+  (28 while the statement was at 33; 29 after adding a debug line - always off by the same shift).
+  Diagnosis: the script had been written as UTF-8 WITHOUT BOM. PowerShell 5.1 reads a BOM-less UTF-8
+  script as ANSI/GB2312, so the Chinese comments turned into mojibake, and the mojibake corrupted the
+  parse - which is why variable assignment appeared not to happen and line numbers disagreed.
+  Proof: the first three bytes were 3C 23 0A (no EF BB BF).
+  Fix: rewrote all four tools\*.ps1 as UTF-8 WITH BOM. Backup then ran clean:
+      [verify] checked 13 files, failures 0  /  exit code 0
+  Doc: added to AGENTS.md rule 0, output-storage-policy.md section 10 and global-agents.md rule 7, and the
+  global copy was redeployed (5899 -> 6188 chars, byte-identical check True).
+  Note: this refines the older blanket rule. Data files (md/json) stay BOM-less; PowerShell scripts must
+  carry a BOM because PowerShell itself parses them.
+
+PART 3 - BACKUP STATE
+  Two failed runs (13 files each, missing BACKUP-README.md) were deleted. Kept:
+      20261013-213738  (14 files, 92 KB, includes the restore doc)
+      20261013-213753  (fresh run after the rule update)
+  Rule 8 plus Backup-Rules.ps1 are now the enforced mechanism; the folder keeps the newest five.
+
+PART 4 - WHY A CONVERSATION CAN STOP BY ITSELF (evidence, not guesswork)
+  Source: the packaged implementation at resources\app.asar, package @deepseek-ai/dsh-agent-loop
+  (lib/index.js 71 KB plus README.zh.md, extracted to workspace for reference).
+  The Chinese README states outright, under known limitations:
+      "没有内置轮次预算：工具调用或 steering 会让当前轮次继续；限制失控轮次的策略必须从既有生命周期
+       扩展点（如 agent/turn-stopping）执行取消。"
+  i.e. the loop has NO built-in turn budget. Related facts from the same source: agents[].maxTokens is an
+  optional per-request output cap; turns end through normal completion, a token cap, a cancellation
+  (TurnEndCancelCause / AbortSignal) or an unhandled request failure (agent/request-error -> terminal).
+  Configuration check on this machine: maxTokens is not set in settings.yaml (file absent), the imported
+  settings, or either profile patch. So the stop came from the model service's own output ceiling, not
+  from a DSH limit.
+  Together with the pasted transcript - hundreds of repetitions of "好。执行。（发送）" - the sequence is:
+  the model entered a degenerate repetition loop in its reasoning, DSH does not intervene on repetition,
+  and generation continued until the provider's output cap ended the turn. That is what "it stopped by
+  itself" looks like from the outside.

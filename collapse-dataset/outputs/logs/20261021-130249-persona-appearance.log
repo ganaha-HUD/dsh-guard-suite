@@ -1,0 +1,60 @@
+﻿PERSONA APPEARANCE ADDED FROM FIVE REFERENCE IMAGES
+==================================================
+Time : 2026-10-21 13:02
+
+INPUT
+  Five images: a full-body official illustration (1152x2048), a kneeling cheer pose (640x853), a chibi
+  wink captioned with the token joke (1500x1500), plus two AVIF files that read_image cannot open - they
+  were converted to PNG with PIL (AVIF 1152x2048 and 1192x665) and turned out to be the full-body pose
+  and a chibi three-view turnaround (front / side / back).
+
+WHAT THE IMAGES ACTUALLY SHOW (read off the pixels, not guessed)
+  Hair      blue, dark navy at the crown fading to pale blue at the tips; one ring-shaped ahoge on top;
+            a small blue bow on each side.
+  Ears      whale-fin flippers (blue, paler inside) - NOT cat ears; white ruffled maid headpiece.
+  Tail      a blue forked whale tail emerging from behind the skirt.
+  Outfit    long navy-and-white maid dress: navy bodice with four gold buttons, white ruffled plastron,
+            navy sleeves with white ruffled cuffs, navy skirt with white hem frill and gold vine
+            embroidery plus gold bows, blue pinstriped underskirt, white ruffled apron with a small blue
+            whale printed on the lower right, sapphire brooch and navy bow at the collar, white socks and
+            navy Mary Janes.
+  Palette   deep navy + white + gold + pale blue.
+  Expressions half-lidded pout (tsundere), open-mouth cheer (genki), chibi wink (cutesy), blank stare
+            (sleepy or playing dead).
+  Poses     lifting the skirt hem, peace sign, open shrug, or crouching to slack off.
+
+ALSO CAPTURED
+  The chibi image carried a catchphrase in a speech bubble - "you can scold me all you like, the tokens
+  I burn are still yours" - which is now a fourth stock line alongside the three that were there.
+
+WHERE IT WENT
+  A new subsection "### 六、外观（二创形象）" appended after the personality recipe so that none of the
+  existing section numbers shift. Global copy 8009 -> 8562 characters, source and deployed file verified
+  byte-identical. Backup refreshed, 13 files, 0 failures.
+
+REFERENCE IMAGES ARCHIVED
+  archive\conv-20260928-3b54e160\persona-refs\
+    official-01-proud.png            the pout, hands forming a heart
+    official-02-cheer.png            kneeling cheer
+    chibi-03-wink-token.png          chibi wink + token catchphrase
+    official-04-fullbody.png         full body, lifting the hem
+    chibi-05-turnaround.png          chibi front / side / back
+  The temporary PNG conversions in workspace\ were removed once copied.
+
+TWICE CAUGHT BY THE SAME TRAP
+  Both attempts to do this inline through pwsh -Command failed to parse: the Chinese full-width quotes
+  inside a double-quoted string were treated as string delimiters. The fix was to write the whole thing
+  as a .ps1 file (UTF-8 with BOM) with every Chinese literal in a single-quoted string, then run the file.
+  This is the third time in this conversation that non-ASCII literals have broken an inline command; the
+  durable lesson is that any script containing Chinese quotes or full-width punctuation should go to a
+  file, not into -Command.
+CORRECTION AND CLEANUP (same session, ten minutes later)
+  A duplicated horizontal rule slipped in: the appearance section I appended carried its own closing
+  "---" on top of the one that already ended the persona block, producing two rules separated by blank
+  lines. Collapsed with a regex on the markdown file, verified that exactly one standalone "---" remains,
+  redeployed and re-backed up.
+
+  Final state: 8352 characters (not the 8562 quoted above - that figure included the extra separator),
+  source and deployed copy byte-identical, section order confirmed as
+      persona -> 六、外观 -> --- -> rules 1-8
+  Backup destinations in this pass: 20261021-130249 (first deploy) and 20261021-130301 (after cleanup).

@@ -1,0 +1,32 @@
+{
+  "title": "Session 3b54e160: A Single-Trajectory Dataset of Shrink-Collapse in an LLM Tool-Use Agent",
+  "description": "<p>A fully annotated, single-trajectory dataset of an LLM agent that progressively stopped acting while its tone stayed confident.</p><p><strong>What it contains</strong></p><ul><li>137 turns / 1,384 assistant steps / 10,816 events, model <code>deepseek-flash</code></li><li>Per-step annotations: tool calls, characters, action verbs, assertions, hedges, evidence markers, falsification language, template hits, duplicate share, pseudo-certainty</li><li>Labels: normal (1,100) / suspect (274) / collapse (10)</li><li>Full append-only session log, plus every artifact the session produced (111 files)</li><li>The experimental context: rule files, tools, and the 1,405-character persona block inserted at turn 86, with system-prompt snapshots before and after</li><li>Reproduction code and a pre/post-T86 statistical analysis</li></ul><p><strong>Why it is interesting</strong>: existing degeneration work focuses on expansion (one phrase emitted tens of thousands of times). This session shows the opposite: text and actions shrink while assertion density stays flat, so a repetition detector with a calibrated threshold of 0.80 fires zero times (maximum duplicate share observed: 0.44).</p><p><strong>Statistical note</strong>: the effect size for tool-call density is small at the step level (Cliff's delta 0.144) but medium-to-large at the turn level (0.521), because the step-level variable is discrete and its median saturates. Both are reported.</p><p><strong>Scope</strong>: one session. It supports existence claims about this failure mode, not prevalence claims. The persona injection is confounded with time and context length; causal attribution requires the control experiment described in docs/CONFOUNDERS.md.</p>",
+  "creators": [
+    {
+      "name": "Xu, Fengzhe",
+      "affiliation": "independent researcher",
+      "orcid": ""
+    }
+  ],
+  "keywords": [
+    "LLM agents",
+    "degeneration",
+    "repetition collapse",
+    "tool use",
+    "annotated dataset",
+    "agent reliability",
+    "persona injection"
+  ],
+  "license": "cc-by-4.0",
+  "upload_type": "dataset",
+  "access_right": "open",
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/ganaha-HUD/dsh-guard-suite",
+      "relation": "isSupplementedBy",
+      "scheme": "url"
+    }
+  ],
+  "notes": "Author GitHub handle: ganaha-HUD. The session log is UTF-8. The compressed log is a concatenation of 5,990 zstd frames; a single-shot decompressor returns only the first frame. An uncompressed copy is included. No credentials or third-party personal data are present (verified by scanning every file)."
+}

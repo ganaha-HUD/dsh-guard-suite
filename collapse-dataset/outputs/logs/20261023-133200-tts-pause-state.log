@@ -1,0 +1,70 @@
+QWEN3-TTS INSTALL: STATE AT PAUSE
+=================================
+Time : 2026-10-23 13:31
+
+STATUS: NOT WORKING YET. Blocked on network, not on configuration.
+
+WHAT IS INSTALLED AND VERIFIED
+  service    D:\AI_file\tools\qwen3-tts-ov\qwen3-tts-ov-server.exe (v0.1.4, PyInstaller)
+             runs on 127.0.0.1:17860, API verified: /health /v1/models /v1/audio/speech
+             /v1/tts /v1/tts/stream /v1/audio/voices /v1/models/download
+  IR (voice_design)  18 files / 2987.3 MB, all 7 weight .bin present
+  IR (base)          9 files / 6.4 MB - INCOMPLETE (needs ~3 GB, network died)
+  reference voice    D:\AI_file\datasets\dafeiyu-voice\ref-dwg-0031.wav (385324 B, RIFF ok)
+  voice metadata     D:\AI_file\datasets\dafeiyu-voice\metadata.csv (58 lines)
+
+WHAT BLOCKS EACH MODE
+  voice_design  manifest carries `graphs.paged_kv_seed.talker_stateful_batch_gqa` but the exe
+                raises KeyError 'talker'. Adding a top-level `talker` key (copy of talker_config)
+                did NOT help, so the lookup is deeper than the top level. This is a manifest/exe
+                format mismatch inside the published package, not a download problem.
+  voice_clone   manifest is accepted (available=true); only reports missing
+                openvino_realtime/base/vocab.json. Pure missing files - fixable by finishing base/.
+  custom_voice  not downloaded at all.
+
+WHY base/ IS NOT FINISHING
+  Measured at 13:31: hf api timeout, hf-mirror api timeout, hf direct file timeout,
+  hf-mirror file 200 but 17 KB/s. 3 GB at 17 KB/s is ~50 hours. Earlier in the day the same
+  route did 1.2-2.5 MB/s, so this is a tunnel/route regression, not a code issue.
+  ModelScope remained fast (112 ms) throughout, which is why the voice reference downloaded fine.
+
+HOW THE DOWNLOAD MACHINERY WORKS (reusable tomorrow)
+  D:\AI_file\tools\pull-voice-design-segmented.py    8 MB segments, 4 concurrent, resumable
+  D:\AI_file\tools\pull-ir-subdir.py <subdir>        same, for any subfolder e.g. openvino_realtime/base
+  D:\AI_file\tools\pull-whole-file.cjs               whole-file stream when a Range is truncated
+  D:\AI_file\tools\repair-seg022-chunks.py           repair one segment in 1 MB chunks
+  logs: D:\AI_file\logs\qwen3-tts-pull-seg.log, qwen3-tts-pull-base.log
+
+MEASURED FINDINGS WORTH KEEPING
+  1. HF now 302s to us.aws.cdn.hf.co/xet-bridge-us/... (Xet storage). That CDN truncated one
+     specific Range at exactly 1022087 bytes on every attempt, full or 1 MB chunk. Whole-file
+     streaming worked instead.
+  2. The tree API's reported size for speech_decoder_stream_c25_t24.bin was 227944192 while the
+     real content-length was 228056860 (112668 bytes larger). Trust content-length when segmenting.
+  3. NPU is not usable for this model: "Missing upper bound for one or more nodes" from the NPU
+     compiler. Use --device GPU. Correct this in any earlier note claiming NPU readiness.
+  4. Add-Type in this PowerShell blocks for hours on this machine. Use
+     powercfg /change monitor-timeout-ac N and restore afterwards to turn the screen off.
+  5. A scheduled reminder can arrive hours late; always re-check live state instead of trusting
+     the reminder's embedded numbers.
+
+NEXT STEP, WHEN THE NETWORK IS GOOD
+  1. Confirm hf direct is fast again (a single 8 MB range should be > 500 KB/s).
+  2. python pull-ir-subdir.py openvino_realtime/base          (expect ~3 GB)
+  3. restart server with --device GPU
+  4. POST /v1/tts {"text":"你好，我是DSH，蓝色大肥鱼。","mode":"voice_clone",
+                   "ref_audio":"D:/AI_file/datasets/dafeiyu-voice/ref-dwg-0031.wav"}
+     (exact field names unconfirmed - the OpenAPI schema is additionalProperties:true; if this
+      fails, read the web console at 127.0.0.1:17860 for the field list)
+  5. validate the wav with python wave: >10KB, sane rate, 0.5-30 s
+  6. only then consider wiring it into the MCP server as a `speak` tool
+
+LICENCES
+  model weights : Qwen Research License - research/evaluation only, no commercial use
+  voice dataset : CC BY-NC 4.0 - non-commercial only; attribution to 尹紫鹭幻想社
+                  (Bilibili) required, licence link and change notice required on redistribution
+  So the whole TTS stack is personal/non-commercial use only.
+
+POWER SETTINGS
+  Restored to the user's originals: sleep 30 min, hibernate 180 min, monitor off 30 min (AC).
+  The manifest.json.bak created during testing was already restored; manifest is the repo original.

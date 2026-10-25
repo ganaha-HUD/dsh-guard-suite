@@ -1,0 +1,50 @@
+WORKSPACE AND RULE REBUILD AFTER THE DISK WIPE
+==============================================
+Time : 2026-10-11 23:06
+
+INCIDENT
+  The E: volume was wiped (it held my workspace E:\Deepseek). The user recovered what was possible into
+  C:\huifu (16.85 GB, 56797 files, PhotoRec style: recup_dir.N with f########.ext names, all original
+  filenames lost).
+
+SURVEY FIRST
+  E:    0 GB used            -> workspace gone
+  D:    D:\AI_file intact    -> 20.4 GB: models, venv, MCP server v1.11.0, registry.json all present
+  C:    ~\.dsh intact        -> global AGENTS.md (9173 bytes) + 12 timestamped backups + profiles (MCP
+                                registration) + session records
+  C:\huifu                    -> recovery data; text files all landed under one .txt pile with no names
+
+RECOVERY SOURCES, BY FIDELITY
+  1. byte-exact : global-agents.md copied from ~\.dsh\AGENTS.md (the deployed latest version)
+  2. byte-exact : workspace AGENTS.md rebuilt verbatim from the conversation context (DSH reloaded it)
+  3. content-scan of C:\huifu for the original policy/tool files (background, results pending)
+  4. structural + semantic rebuild : policy md/json, tools scripts, registry, README
+
+SESSION RECORD DEAD END
+  session.v4.jsonl.zstd is a non-standard multi-frame stream: both zstdDecompressSync and the streaming
+  decompressor returned only the metadata header ("Unknown frame descriptor"), so that source was dropped.
+  Nothing depended on it because the two AGENTS files were recoverable at full fidelity.
+
+REBUILT
+  AGENTS.md 10.1 KB | policy\deploy\global-agents.md 9.2 KB (copied) | storage-policy.json 6.3 KB
+  output-storage-policy.md 6.5 KB | ai-tool-policy.md 14.6 KB (sections 1-12) | ai-tools.json
+  (8 tools, 12 routing rules, 7 longevity rules, maintenance, vlmOnlyAnswerPolicy)
+  conversation-registry.json (8 entries: 1 active, 7 marked lost) | README.md 3.3 KB
+  tools\New-ConversationWorkspace.ps1 | tools\Install-GlobalPolicy.ps1 | tools\Test-StoragePolicy.ps1
+  All three PowerShell scripts pass a parser syntax check.
+
+ONE REAL DEFECT FOUND AND FIXED DURING REBUILD
+  The rebuilt workspace script derived the conversation id from today's date, so this conversation got
+  conv-20261011-3b54e160 while its original id was conv-20260928-3b54e160 - two ids for one conversation,
+  which the self test flagged. The script now reuses a registered entry with the same session token;
+  folders were moved back to the original id and the bogus registry entry removed. Re-running the script
+  prints "reusing registered conversation id: conv-20260928-3b54e160".
+
+VERIFICATION
+  Test-StoragePolicy.ps1 -> FAIL=0 WARN=0 (six sections, twenty-plus checks)
+  vision_status -> image gen / detector / anomaly all [present]; server v1.11 startup self check OK
+  => the eight local AI tools are fully usable; only the workspace files had to be rebuilt.
+
+OUTSTANDING
+  user files in reference_file (CH634DS1.PDF, 720421...png) - being searched in C:\huifu by file header
+  historical deliverables - content search running; can be re-exported from the conversation if needed

@@ -1,0 +1,80 @@
+{
+    "note":  "对话登记表。每个对话在六个类别目录下使用同一个 conv-\u003cyyyyMMdd\u003e-\u003ctoken\u003e 子目录名；同 ID 已存在则复用，不另建。2026-10-11 重建：E: 盘被清空，历史对话目录随磁盘丢失，其条目保留为 status=lost 以留痕，自检脚本会跳过它们的目录检查。",
+    "rebuiltAt":  "2026-10-11",
+    "pattern":  "conv-\u003cyyyyMMdd\u003e-\u003ctoken\u003e",
+    "regex":  "^conv-[0-9]{8}-([0-9a-f]{8}|[0-9]{6})(-[a-z0-9]{2,32})?$",
+    "conversations":  [
+                          {
+                              "folder":  "conv-20260928-3b54e160",
+                              "createdAt":  "2026-09-28 12:43:58",
+                              "status":  "active",
+                              "note":  "长期主线对话：本地 AI 工具集建设与规则制定（磁盘清空后重建工作区）"
+                          },
+                          {
+                              "folder":  "conv-20260928-c8e2cbb8",
+                              "createdAt":  "2026-09-28 22:32:20",
+                              "status":  "lost",
+                              "note":  "随 E: 盘清空丢失"
+                          },
+                          {
+                              "folder":  "conv-20260928-5afba4fd",
+                              "createdAt":  "2026-09-28 22:33:46",
+                              "status":  "lost",
+                              "note":  "随 E: 盘清空丢失"
+                          },
+                          {
+                              "folder":  "conv-20260928-5ca0242e",
+                              "createdAt":  "2026-09-28 22:33:48",
+                              "status":  "lost",
+                              "note":  "随 E: 盘清空丢失"
+                          },
+                          {
+                              "folder":  "conv-20261003-61324bfb",
+                              "createdAt":  "2026-10-03 09:58:39",
+                              "status":  "lost",
+                              "note":  "随 E: 盘清空丢失"
+                          },
+                          {
+                              "folder":  "conv-20261004-f5dc7d87",
+                              "createdAt":  "2026-10-04 15:45:14",
+                              "status":  "lost",
+                              "note":  "随 E: 盘清空丢失"
+                          },
+                          {
+                              "folder":  "conv-20261004-7a531c9a",
+                              "createdAt":  "2026-10-04 22:16:11",
+                              "status":  "lost",
+                              "note":  "随 E: 盘清空丢失"
+                          },
+                          {
+                              "folder":  "conv-20261004-8041580a",
+                              "createdAt":  "2026-10-04 22:22:07",
+                              "status":  "lost",
+                              "note":  "随 E: 盘清空丢失"
+                          },
+                          {
+                              "folder":  "conv-20261012-7817dfa3",
+                              "createdAt":  "2026-10-12 22:30:42",
+                              "status":  "active",
+                              "note":  "created by New-ConversationWorkspace.ps1"
+                          },
+                          {
+                              "folder":  "conv-20261013-a5c1dad4",
+                              "createdAt":  "2026-10-13 13:02:28",
+                              "status":  "active",
+                              "note":  "created by New-ConversationWorkspace.ps1"
+                          },
+                          {
+                              "folder":  "conv-20261013-125aa26b",
+                              "createdAt":  "2026-10-13 23:01:28",
+                              "status":  "active",
+                              "note":  "created by New-ConversationWorkspace.ps1"
+                          },
+                          {
+                              "folder":  "conv-20261014-259307c3",
+                              "createdAt":  "2026-10-14 09:29:35",
+                              "status":  "active",
+                              "note":  "created by New-ConversationWorkspace.ps1"
+                          }
+                      ]
+}

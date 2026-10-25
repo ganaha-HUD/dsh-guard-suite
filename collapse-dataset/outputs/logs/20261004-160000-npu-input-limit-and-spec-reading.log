@@ -1,0 +1,51 @@
+NPU INPUT LIMIT INVESTIGATION + SPEC SHEET READING VERIFICATION - RUN LOG
+=========================================================================
+Time         : 2026-10-04 19:48
+Request      : "切分区块识别会产生很多问题，能不能修改 NPU 默认 1024 上限"
+
+ANSWER: the limit cannot be raised.
+  default (1024)  911 tokens  -> OK, 335 chars of correct Chinese
+  MAX_PROMPT_LEN=2048  1824 tokens -> EMPTY
+  MAX_PROMPT_LEN=3072  2494 tokens -> EMPTY
+  MAX_PROMPT_LEN=4096  2776 tokens -> EMPTY (load 96.6 s, gen 77.7 s)
+  MAX_PROMPT_LEN=2048  2776 tokens -> rejected: "may only process input embeddings up to 2048 tokens"
+  GPU + MAX_PROMPT_LEN -> plugin error: Check 'it != m_options_map.end()' failed   (option is NPU-only)
+  CPU + MAX_PROMPT_LEN -> plugin error (unsupported)
+  GPU default 1460 tokens -> EMPTY;  GPU default 2776 tokens -> EMPTY (load 136.9 s)
+=> MAX_PROMPT_LEN is NPU-only, and above the default 1024 tokens the VLM emits nothing at all.
+
+MY OWN MISTAKE, CORRECTED
+  I first tried to fix the empty output with greedy decoding by constructing a blank
+  openvino_genai.GenerationConfig(). That discards the model's own generation parameters (eos,
+  repetition penalty, ...) and made EVERY request empty. Lesson: do not build a GenerationConfig from
+  scratch; keep the model's default sampling (the model card recommends temperature 1.0 / top_p 0.95 /
+  top_k 20 for general tasks).
+
+EMPTY OUTPUT IS INTERMITTENT, RETRY WORKS
+  page 2 alone, 3 consecutive reads: 279 chars each time, identical.
+  one pipeline across 4 pages: 270 / 279 / 249 / 66 chars.
+  fresh pipeline per page: 270 / 279 / 249 / 66 chars (same).
+=> an occasional immediate EOS at temperature 1.0; a retry loop in the server covers it.
+
+SPEC SHEET VERIFICATION (reference_file\CH634DS1.PDF, 33 pages, WCH, V2.3)
+  VLM at 940 tokens per page:
+    page 1 paragraph read correctly in meaning, ~90% of characters (HUB read as "H H", "控制器" dropped)
+    page 2 features list correct (one duplicated "USB3.1")
+    page 3 table title only; table contents garbled
+    page 4 pin-out page: 66 chars, essentially failed
+  PDF text layer (PyMuPDF): 1267 / 1315 / 1659 / 3198 chars, exact, near-zero cost.
+=> the document itself is born-digital; plain text extraction beats any vision model here.
+
+ARCHITECTURE CONCLUSION
+  born-digital documents -> text extraction
+  scans/photos of text   -> PP-OCRv5 (native resolution, no token limit)
+  figures/charts/scenes  -> local VLM on NPU (its actual strength)
+
+ARTEFACTS
+  deliverables\conv-20260928-3b54e160\npu-input-limit-and-spec-reading-v1.md
+  scripts\conv-20260928-3b54e160\test-npu-limit-matrix.py, test-npu-limit-default-sampling.py,
+    test-gpu-fullpage.py, read-spec-downscaled.py, extract-text-and-retry.py,
+    test-pipeline-reuse.py, dump-pdf-text.py, call-vision-tool.py, pdf-to-vision.py
+  workspace\conv-20260928-3b54e160\  (npu-limit-*.txt, gpu-fullpage-test.txt,
+    spec-pages-1-4-downscaled.txt, page2-retry-test.txt, pipeline-reuse-test.txt,
+    spec-text-layer-p1-6.txt)

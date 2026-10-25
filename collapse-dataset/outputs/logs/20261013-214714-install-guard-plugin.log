@@ -1,0 +1,42 @@
+INSTALL dsh-guard-repeat-output ON THE DESKTOP CLIENT - PREPARATION
+==================================================================
+Time : 2026-10-13 21:47
+
+WHY THE CLI CANNOT DO IT
+  dsh plugin --profile desktop <anything> returns:
+      error: profile "desktop" is managed exclusively by the Electron application
+  Even a read-only list is refused. The CLI here is 0.1.7-rc.2 while the desktop app is 0.2.0-rc.2, so
+  crossing them would be wrong anyway. For contrast, the web profile is CLI-managed and already carries
+  dshmarket@1.66.2 and @dsh-use/wallpaper-engine@0.6.0 - that profile could be installed into by CLI,
+  the desktop one cannot.
+
+WHAT WAS PREPARED INSTEAD
+  npm pack dsh-guard-repeat-output (npmmirror) -> dsh-guard-repeat-output-2.1.7.tgz, 40.7 KB, extracted
+  and inspected. The package is ideal for this environment:
+    dependencies: none          -> nothing extra to fetch
+    scripts: none              -> pnpm cannot be blocked over build scripts
+    peerDependencies: @deepseek-ai/dsh >=0.1.6-alpha.2 <0.3.0-0  -> satisfied by 0.2.0-rc.2
+    engines: node >=20          -> satisfied by 24.20.0
+    no runtime version gate in the code (only config validation throws)
+    ships its own cordis.patch.yml using the same "- insert:" form already used in this machine's
+    profiles for the vision MCP server, so the patch shape is known-good here.
+
+WHAT THE PLUGIN DOES BY DEFAULT (from its shipped patch)
+  truncateChannels: ['reasoning']   - only the reasoning channel is cut; text is observe-only
+  modelIncludes: ['deepseek']       - DeepSeek-family models only
+  maxDegenerationRetries: 2         - primary path discards the collapsed attempt and re-issues it,
+                                      settled as assistant/attempt so none of it enters context
+  windowChars 2400 / minWindowChars 1200 / minSegments 24 / phraseRun 8 / phraseTopCount 10 /
+  lowInfoDupShare 0.80 / maxUniqueGramRatio 0.30 / holdbackChars 4096 / evalEveryChars 200
+  The author's notes record why there is deliberately no minimum segment length: a live "OK." x44 loop
+  was scored 0.60 (looked varied) until repeaters stopped being dropped. Calibration on real traffic:
+  4 real degenerate samples all convicted; 1708 real legitimate reasoning parts plus 205 real long
+  answers all passed. Retries deliberately do not lower reasoning effort - measured, 67% collapsed
+  again even when lowered.
+
+HANDED TO THE USER
+  A step-by-step in-app install guide (deliverables\...\install-dsh-guard-repeat-output-v1.md): sidebar
+  Plugins -> Add plugin -> enter the package name, or the local tarball, or the extracted folder ->
+  install (the manager auto-probes npmjs vs npmmirror and keeps whichever answers first) -> Enable now
+  -> RESTART DSH -> confirm in the installed group. Plus a failure table and the rule that verification
+  means reading the host log, not trusting the UI.

@@ -1,0 +1,47 @@
+PLUGIN MARKET RESEARCH: ANTI-REPETITION / LOOP GUARDS
+====================================================
+Time : 2026-10-13 21:44
+
+WHERE THE MARKET IS
+  DSH plugins are npm packages. Sources used: registry.npmmirror.com (mirror) and registry.npmjs.org.
+  A community catalogue exists at dsh-plugin.org (pack badges reference it); dsh.so adds risk badges.
+  GUI entry: sidebar Plugins page. The settings "Built-in plugins" section is a read-only inventory.
+  CLI: dsh plugin --profile <p> add <pkg>; the local dsh CLI is present at %APPDATA%\npm\dsh.ps1.
+  The desktop profile is owned by the app, so CLI installs are rejected there - use the in-app page.
+
+WHY THE BUILT-IN GUARDS CANNOT CATCH THIS
+  dsh-agent-loop's own Chinese README states there is NO built-in turn budget, and the shipped guards
+  hang off tool execution (guard/timeout-policy on tools/execute, guard/repeat-tool-reminder on
+  tools/post-execute with a chain key of (tool name, canonical arguments)). A degeneration loop emits
+  only reasoning-delta - zero text-delta, zero tool-call-delta - so neither guard fires, turnEnds stays
+  null and the turn cannot settle. That is the "it stopped by itself" event, reproduced from the source.
+
+FOUR MATCHING PLUGINS (all MIT, all compatible with this machine's 0.2.0-rc.2)
+  dsh-guard-repeat-output   2.1.7  host-side: sanitize code points, detect collapse, DISCARD the attempt
+                                   before it enters history, and retroactively clean a poisoned session.
+                                   Its README documents production incidents of 1.37M chars ("Let me
+                                   produce." x27269) and 250K chars ("Let me write." x1958).
+  dsh-dupguard              1.9.1  stops generation when the same string repeats >=10 times; reasoning
+                                   text included; code regions relaxed 3x; threshold adjustable in settings.
+  @mrweicodes/dsh-loop-guard 1.0.9 takes over llm/stream, breaks reasoning-only and restated-material
+                                   degenerations from inside the stream, then injects a correction so the
+                                   task continues. Its README describes exactly the "好。执行。" pattern.
+  dsh-local-loop-fuse       0.8.3  three lines: text/reasoning repetition (abortable), low-diversity
+                                   sliding window, no-progress stall, then agent.cancel().
+  (also dsh-task-reliability 0.4.9 - a bundle with n-gram reasoning-repeat intervention plus retries,
+   auto-continue, resume-after-sleep, truncation top-up, autopilot; needs Node >=22.)
+  The official @deepseek-ai/dsh-repeat-tool-reminder only watches tool calls and only advises - useless
+  for a loop that makes no tool calls at all.
+
+COMPATIBILITY VERIFIED ON THIS MACHINE
+  dsh-desktop-runtime / dsh-llm / dsh-agent / dsh-agent-loop all 0.2.0-rc.2
+  loop-guard requires dsh-llm and dsh-agent in >=0.2.0-alpha.1 <0.3.0  -> satisfies
+  schemastery 3.18.4 (^3.18.1 ok), cordis 4.0.4 (^4.0.2 ok), Node 24.20.0 (>=20 / >=22 ok)
+
+RECOMMENDATION
+  Install ONE of them (they mostly share the llm/stream mount point, so stacking them risks interference).
+  For this incident the strongest fit is dsh-guard-repeat-output (does not let the garbage reach history
+  and can clean an already-poisoned session); the simplest is dsh-dupguard; the least disruptive is
+  @mrweicodes/dsh-loop-guard because it resumes the task after breaking the loop.
+  Install via the in-app Plugins page, then RESTART DSH, then confirm the plugin's own startup line in
+  the host log before trusting it.

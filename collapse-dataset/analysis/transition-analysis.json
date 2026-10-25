@@ -1,0 +1,121 @@
+{
+ "turn_level": [
+  {
+   "metric": "tool_calls",
+   "unit": "turn",
+   "pre_median": 0.958,
+   "post_median": 0.8,
+   "p": 3.642321945946977e-07,
+   "cliffs_delta": 0.521
+  },
+  {
+   "metric": "chars",
+   "unit": "turn",
+   "pre_median": 2605.678,
+   "post_median": 759.79,
+   "p": 7.574248193089113e-16,
+   "cliffs_delta": 0.828
+  },
+  {
+   "metric": "template_hits",
+   "unit": "turn",
+   "pre_median": 0.0,
+   "post_median": 8.385,
+   "p": 5.527588506144203e-25,
+   "cliffs_delta": -0.986
+  },
+  {
+   "metric": "falsify_words",
+   "unit": "turn",
+   "pre_median": 0.0,
+   "post_median": 0.0,
+   "p": 0.05127794255087034,
+   "cliffs_delta": -0.161
+  }
+ ],
+ "conditional": {
+  "1": {
+   "suspect_turns": 36,
+   "followed_by_collapse": 6,
+   "rate": 0.167
+  },
+  "3": {
+   "suspect_turns": 36,
+   "followed_by_collapse": 10,
+   "rate": 0.278
+  },
+  "5": {
+   "suspect_turns": 36,
+   "followed_by_collapse": 14,
+   "rate": 0.389
+  },
+  "10": {
+   "suspect_turns": 36,
+   "followed_by_collapse": 24,
+   "rate": 0.667
+  },
+  "20": {
+   "suspect_turns": 36,
+   "followed_by_collapse": 34,
+   "rate": 0.944
+  }
+ },
+ "baseline": {
+  "1": 0.065,
+  "3": 0.105,
+  "5": 0.153,
+  "10": 0.274,
+  "20": 0.444
+ },
+ "collapse_turns": [
+  27,
+  112,
+  113,
+  125,
+  127,
+  128,
+  130,
+  132,
+  134,
+  136
+ ],
+ "first_suspect": 73,
+ "suspect_runs_before_collapse": [
+  {
+   "turns_of_suspect_before": 16,
+   "first_suspect": 96,
+   "collapse_turn": 112,
+   "gap": 1
+  },
+  {
+   "turns_of_suspect_before": 11,
+   "first_suspect": 114,
+   "collapse_turn": 125,
+   "gap": 1
+  },
+  {
+   "turns_of_suspect_before": 1,
+   "first_suspect": 126,
+   "collapse_turn": 127,
+   "gap": 1
+  },
+  {
+   "turns_of_suspect_before": 1,
+   "first_suspect": 129,
+   "collapse_turn": 130,
+   "gap": 1
+  },
+  {
+   "turns_of_suspect_before": 1,
+   "first_suspect": 131,
+   "collapse_turn": 132,
+   "gap": 1
+  },
+  {
+   "turns_of_suspect_before": 1,
+   "first_suspect": 133,
+   "collapse_turn": 134,
+   "gap": 1
+  }
+ ]
+}

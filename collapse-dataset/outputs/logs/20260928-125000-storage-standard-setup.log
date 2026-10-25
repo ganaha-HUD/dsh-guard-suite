@@ -1,0 +1,98 @@
+OUTPUT STORAGE STANDARD - SETUP RUN LOG
+=======================================
+Workspace root    : E:\Deepseek
+Conversation dir  : conv-20260928-3b54e160
+Session id        : session-3b54e160-6d42-43a7-b4af-bffba94d76d9
+Run window        : 2026-09-28 12:40 - 12:50 (+08:00)
+Shell             : Windows PowerShell 5.1.26100.9444 (pwsh not installed)
+Workspace volume  : E:\ exFAT removable drive (no hardlink support)
+
+1. RECON FINDINGS
+-----------------
+- DSH loads two instruction layers automatically: the user-global file at DSH_HOME\AGENTS.md for
+  every conversation in every workspace, and the project chain from the project root down to the
+  session working directory. This is the mechanism used to bind other conversations to the standard.
+- DSH_HOME = C:\Users\XuFengZhe\.dsh (the account folder name is non-ASCII, which is why all folder
+  names created by this standard stay ASCII).
+- D:\program_runtime_environment already existed and already contained a usable nodejs folder
+  (node.exe v24.20.0, resolvable through the machine PATH), plus the upstream install_tools.bat.
+- Missing from PATH at run time: py, git, java, go, cargo, ffmpeg, 7z, uv, pip.
+  dotnet is present at C:\Program Files\dotnet\dotnet.exe.
+- D: and C:\ writes are denied by the workspace-write sandbox; two approved danger-full-access
+  escalations were used for the out-of-workspace deployments.
+
+2. FILES CREATED IN THE WORKSPACE
+---------------------------------
+AGENTS.md                                        project-level rules, auto-injected
+README.md                                        workspace overview and quick commands
+policy\output-storage-policy.md                  full standard, version 1.0.0
+policy\storage-policy.json                       machine-readable config, single source of truth
+policy\conversation-registry.json                conversation registry, maintained by script
+policy\deploy\global-agents.md                   staged source of the user-global AGENTS.md
+policy\deploy\runtime-environment\README.md      staged README for the runtime environment root
+policy\deploy\runtime-environment\registry.json  staged registry, seeded with the nodejs entry
+policy\deploy\runtime-environment\tools\Add-RuntimeEnvironment.ps1
+                                                 staged registration helper
+tools\New-ConversationWorkspace.ps1              bootstrap of the per-conversation folders
+tools\Test-StoragePolicy.ps1                     audit of folders, registry, allow list, naming
+tools\Install-GlobalPolicy.ps1                   deploy the global AGENTS.md, or replicate the standard
+tools\Install-RuntimeEnvironmentRoot.ps1         initialise the D: runtime environment root
+tools\README.md                                  tool usage reference
+deliverables\conv-20260928-3b54e160\storage-standard-handover-v1.md
+logs\conv-20260928-3b54e160\conversation.json    session metadata
+logs\conv-20260928-3b54e160\20260928-124500-storage-standard-setup.log  this file
+deliverables\ logs\ scripts\ workspace\ data\ archive\   six category folders, each with the
+                                                 conversation subfolder conv-20260928-3b54e160
+
+3. DEPLOYMENTS OUTSIDE THE WORKSPACE (approved danger-full-access)
+------------------------------------------------------------------
+D:\program_runtime_environment\
+  README.md                              created from the staged source
+  registry.json                          created, 1 environment registered (nodejs 24.20.0)
+  tools\Add-RuntimeEnvironment.ps1        created, later updated with the bug fix
+  _downloads\                            created (installer staging)
+  _caches\                               created (package manager caches)
+  nodejs\                                pre-existing, left untouched
+
+C:\Users\XuFengZhe\.dsh\AGENTS.md         created, 4228 bytes, SHA-256 identical to the staged
+                                          source; no previous file existed, so no backup was needed
+
+4. VERIFICATION
+---------------
+[PASS] tools\New-ConversationWorkspace.ps1 created the six conversation folders and registered the
+       conversation; a second run reported "reused the folder registered for this conversation".
+[PASS] tools\New-ConversationWorkspace.ps1 -Json returned the machine-readable result.
+[PASS] tools\Test-StoragePolicy.ps1 reported FAIL=0 WARN=0: policy parses, six category folders
+       exist, the root contains only allow-listed entries, the registry matches the folders, and no
+       non-ASCII names exist under the category folders.
+[PASS] The project-level AGENTS.md was injected into the running session immediately after it was
+       written, and the user-global AGENTS.md was injected immediately after deployment. Both
+       injections were observed in the live session, which is direct evidence that other
+       conversations will load the standard without any extra action.
+[PASS] tools\Install-RuntimeEnvironmentRoot.ps1 -DryRun reported every folder EXISTS and every file
+       SAME (idempotent, non-destructive).
+[PASS] tools\Install-GlobalPolicy.ps1 re-run reported "already up to date, nothing written".
+[PASS] Add-RuntimeEnvironment.ps1 registered two environments against a workspace-local test root,
+       created cli\ and the versioned python\3.12.7\, updated an existing entry in place instead of
+       duplicating it, and was verified to leave the real D: registry untouched in dry-run mode.
+       The test tree was deleted afterwards.
+
+5. DEFECT FOUND AND FIXED
+-------------------------
+Add-RuntimeEnvironment.ps1 failed with "Cannot process argument because the value of argument
+"name" is not valid" because its helper declared the parameter as $PropName while every call site
+passed -Name. Windows PowerShell 5.1 silently accepted the unmatched named argument, left the
+parameter null and failed later inside the property lookup. Fixed by renaming the parameter to
+$Name in the helper, re-parsed the script, re-ran the functional self-test (all green), and
+redeployed the fixed file to D:\program_runtime_environment\tools\ (hash verified).
+
+6. FOLLOW-UP NOTES
+------------------
+- The D: write path needs danger-full-access approval each time; expect one approval prompt per
+  runtime environment installation. This is expected and documented.
+- python on PATH resolves to the Microsoft Store alias stub, which is not a real interpreter;
+  the first real Python need should install python into D:\program_runtime_environment\python.
+- To change the standard: edit policy\storage-policy.json and policy\output-storage-policy.md,
+  mirror policy\deploy\global-agents.md, then run tools\Install-GlobalPolicy.ps1.
+- To extend the standard to another workspace:
+  tools\Install-GlobalPolicy.ps1 -TargetWorkspace <path>.

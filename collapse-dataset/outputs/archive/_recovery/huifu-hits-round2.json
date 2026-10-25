@@ -1,0 +1,115 @@
+{
+  "scanned": 21327,
+  "results": {
+    "AGENTS.md 工作区全文": [],
+    "global-agents.md 全文": [],
+    "ai-tool-policy.md 全文": [],
+    "output-storage-policy.md 全文": [],
+    "Test-StoragePolicy.ps1 全文": [],
+    "我的 PowerShell 脚本": [],
+    "New-ConversationWorkspace.ps1 全文": [],
+    "Install-GlobalPolicy.ps1 全文": [],
+    "vision-server.py 服务端": [
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f0136448.py",
+        "size": 1957
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f0137728.py",
+        "size": 2790
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.2\\f24390645.txt",
+        "size": 8439
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.2\\f24391424.py",
+        "size": 3601
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.2\\f24391680.py",
+        "size": 3842
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.2\\f24392704.txt",
+        "size": 2788
+      }
+    ],
+    "工具集指南 DOCX 或构建脚本": [
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21546752.txt",
+        "size": 22524
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21548800.txt",
+        "size": 1664
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21550336.txt",
+        "size": 1343
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21552128.txt",
+        "size": 1022
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21553664.txt",
+        "size": 1022
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21556480.txt",
+        "size": 3173
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.2\\f24409088.py",
+        "size": 3357
+      }
+    ],
+    "生图故障复盘日志": [
+      {
+        "path": "C:\\huifu\\recup_dir.2\\f24392704.txt",
+        "size": 2788
+      }
+    ],
+    "Z-Image 对比报告": [],
+    "PDF 能力报告": [],
+    "规则审计报告": [],
+    "存放准则审计": [],
+    "PatchCore 训练脚本": [
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21543176.txt",
+        "size": 2766
+      }
+    ],
+    "合成缺陷数据集脚本": [],
+    "HF 仓库下载脚本": [
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21546246.txt",
+        "size": 3027
+      }
+    ],
+    "FLUX 切换脚本": [],
+    "用户参考资料引用": [
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21505792.py",
+        "size": 467
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21506048.py",
+        "size": 2253
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21507840.txt",
+        "size": 3040
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21512448.py",
+        "size": 1893
+      },
+      {
+        "path": "C:\\huifu\\recup_dir.1\\f21515520.py",
+        "size": 2020
+      }
+    ]
+  }
+}

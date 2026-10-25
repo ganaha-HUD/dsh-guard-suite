@@ -1,0 +1,54 @@
+﻿dsh-guard-repeat-output: VERSION CHECK AND FIRST CONFIRMED INTERCEPTION
+=====================================================================
+Time : 2026-10-20 22:13
+
+REQUEST
+  User asked to update dsh-guard-repeat-output. Checked first; there is nothing to update to.
+
+VERSION CHECK (three independent channels agree)
+  npm dist-tags.latest = 2.1.7  (the only tag; no next/alpha channel)
+  total published versions 14, highest = 2.1.7
+  GitHub tags: v2.1.7 newest; newest commit is "release: 2.1.7 - 垃圾占比腿补体量门槛，改为累积窗口度量"
+    dated 2026-10-11T12:50:40Z
+  Installed 2.1.7 was published 2026-10-11T12:56:22Z - i.e. the installed copy IS the newest release.
+  peerDependencies "@deepseek-ai/dsh >=0.1.6-alpha.2 <0.3.0-0" -> 0.2.1-rc.2 in range, so the desktop
+  upgrade did not strand this plugin (unlike dshmarket 1.66.7).
+
+IT HAS ALREADY FIRED ONCE - AND ON EXACTLY THE FAILURE IT WAS INSTALLED FOR
+  Conviction log: ~/.dsh/logs/dsh-guard-repeat-output.log, last write 2026-10-19 13:15:32 local
+    {"event":"repetition-detected","action":"discard-and-retry","channel":"reasoning",
+     "kind":"low-information","topPhrase":"好","topPhraseCount":122,"longestRun":1,
+     "segments":342,"duplicateShare":0.8947,"uniqueGramRatio":0.2372,"seenChars":3600,
+     "prunedChars":0,"turn":58,"elapsedMs":7512,"continuing":false}
+  Reading:
+    channel reasoning          - the reasoning channel, exactly the one configured for truncation
+    kind low-information       - low-information repetition detector
+    topPhrase "好" x122        - the same "好" / "执行" stutter pattern the user reported
+    duplicateShare 0.8947      - 89.5% duplicate segments
+    uniqueGramRatio 0.2372     - below the 0.30 threshold
+    action discard-and-retry   - the attempt was discarded and re-issued (primary path)
+    prunedChars 0              - no partial trimming; the whole attempt went, so none of it reached the
+                                 context window
+    turn 58                    - a late turn in a long session, consistent with degeneration under long
+                                 context
+
+  Sidecar copy retained for audit:
+    ~/.dsh/logs/guard-repeat-output-pruned/session-259307c3-...__t58__...__reasoning.txt  (6.7 KB, 707 lines)
+  Analysed it: lines 1-60 are normal work (writing install.sh, mosquitto config), degeneration begins at
+  line 65 with alternating "写。" / "好。" / "执行。", and 122 lines are exactly "好" or "好。" - which
+  matches topPhraseCount 122 one-for-one. The tail reads
+      （停止循环，执行）好。
+      （写）
+      好。
+      （执行）
+      好。
+  The model was writing "stop looping, execute" at itself and still could not stop - the precise failure
+  mode the plugin exists to break, and the strongest possible evidence that it works.
+
+CONCLUSION
+  No update available and none needed: the installed 2.1.7 is the newest release, is compatible with the
+  0.2.1 desktop runtime, and has already intercepted one genuine degeneration (discarding 3600 chars of
+  poisoned reasoning while keeping a 6.7 KB copy for review).
+  If more or less sensitivity is ever wanted, the plugin's own config exposes windowChars, minSegments,
+  phraseRun, lowInfoDupShare, maxUniqueGramRatio and maxDegenerationRetries; the defaults already caught
+  this case on the first opportunity.

@@ -1,0 +1,671 @@
+{
+  "scanned": 56797,
+  "pdfs": [
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0039168.pdf",
+      "size": 251206
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0123904.pdf",
+      "size": 611103
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0125184.pdf",
+      "size": 341182
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0128000.pdf",
+      "size": 624620
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0378880_USB4_Interop_Test_Specification.pdf",
+      "size": 799442
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0380672_7_Prohibited_Product_IDs.pdf",
+      "size": 407255
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0381696_Introducing_Thunderbolt_4_Universal_Cable_Connectivity_for_Everyone.pdf",
+      "size": 468570
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0388352.pdf",
+      "size": 127981
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0388864_TPS65982DMC_and_TPS65994BG_Smart_Power_Management_Application.pdf",
+      "size": 21634106
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0431360_USB_Type_C_PD3_1_extended_power_range_and_the_benefits_of_Type_C_BQ_solution.pdf",
+      "size": 1015654
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0433664.pdf",
+      "size": 687768
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0436224.pdf",
+      "size": 113617
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0438272.pdf",
+      "size": 2017486
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0444928.pdf",
+      "size": 130815
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0445184.pdf",
+      "size": 114013
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0446720.pdf",
+      "size": 564392
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0448000_EZ_PD_TM_PMG1_S3_Dock_user_guide.pdf",
+      "size": 8064468
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0474624_TPS25751_USB_Type_C_and_USB_PD_Controller_with_Integrated_Power_Switches_Optimized_for_Power_Applications_datasheet_Rev_A.pdf",
+      "size": 3913794
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0482304_TPS65988_Dual_Port_USB_Type_C_and_USB_PD_Controller_with_Integrated_Source_and_Sink_Power_Path_Supporting_USB3_and_Alternate_Mode_datasheet_Rev_B.pdf",
+      "size": 5151362
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0493312_TPS25751_Technical_Reference_Manual_Rev_B.pdf",
+      "size": 1236100
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0495872_Common_TPS25751_Use_Cases_and_Setting_Using_EC_Rev_A.pdf",
+      "size": 1751198
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0499456_TPS65988DH_Integrated_Type_C_PD_Dual_Port_Wall_Socket_With_Power_Balancing_Rev_A.pdf",
+      "size": 1233851
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0502016_TPS65982DMC_and_TPS65994BG_Smart_Power_Management_Application.pdf",
+      "size": 662586
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0503808.pdf",
+      "size": 2036040
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0507904.pdf",
+      "size": 2121036
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0520704_TPS25751_Evaluation_Module_Rev_B.pdf",
+      "size": 12099618
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0544512_TPS25751A_Evaluation_Module_User_s_Guide.pdf",
+      "size": 3521229
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f0551424_TPS25751_Technical_Reference_Manual_Rev_B.pdf",
+      "size": 1236100
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178757632_Schematic_Prints.pdf",
+      "size": 35722
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178760448.pdf",
+      "size": 2379366
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178765312.pdf",
+      "size": 869339
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178770944_Protel_Schematic.pdf",
+      "size": 37529
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178771712_W25Q128BV_WINBOND_Alldatasheet.pdf",
+      "size": 894968
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178773504_W25Q16BV_WINBOND_Alldatasheet.pdf",
+      "size": 2123438
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178777856_W25Q256FV_WINBOND_Alldatasheet.pdf",
+      "size": 2876094
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178783488_W25Q32BV_WINBOND_Alldatasheet.pdf",
+      "size": 1136023
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178785792_W25Q40BV_WINBOND_Alldatasheet.pdf",
+      "size": 2294277
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178790400_GENERAL_DESCRIPTION.pdf",
+      "size": 1630825
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178793728_W25Q80BV_WINBOND_Alldatasheet.pdf",
+      "size": 1100141
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178806272_Microsoft_Word_EU_stlink_V0_0_2.pdf",
+      "size": 1616444
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178812160.pdf",
+      "size": 281002
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178812928.pdf",
+      "size": 25852
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178831360_4D6963726F736F667420576F7264202D20C8C8C3F4B5E7D7E8B4ABB8D0C6F7CAB9D3C3CBB5C3F7.pdf",
+      "size": 139415
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.100\\f178831872_U1_8.pdf",
+      "size": 156616
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178842880.pdf",
+      "size": 447083
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178844672.pdf",
+      "size": 310734
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178845440.pdf",
+      "size": 25389
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178854144_Microsoft_Word_ITR9606.pdf",
+      "size": 328408
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178856192.pdf",
+      "size": 183630
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178856704.pdf",
+      "size": 27133
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178865408.pdf",
+      "size": 176252
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178865920.pdf",
+      "size": 26642
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178874624.pdf",
+      "size": 1692372
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178878208.pdf",
+      "size": 99018
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178933504.pdf",
+      "size": 72835
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178933760.pdf",
+      "size": 74608
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178934016.pdf",
+      "size": 81458
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178934272.pdf",
+      "size": 66305
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178934528.pdf",
+      "size": 65964
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178934784.pdf",
+      "size": 73446
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178935296.pdf",
+      "size": 1008477
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f178937344.pdf",
+      "size": 1420360
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f179135232.pdf",
+      "size": 44497
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f179135488.pdf",
+      "size": 1840515
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f179139328_4D6963726F736F667420576F7264202D20474232333132BCF2CCE5D6D0CEC4B1E0C2EBB1ED2E646F63.pdf",
+      "size": 1262150
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f179149312.pdf",
+      "size": 443088
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.101\\f179153408.pdf",
+      "size": 906224
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.12\\f33982464_Contents.pdf",
+      "size": 750958
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24416768.pdf",
+      "size": 309862
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24418304.pdf",
+      "size": 611103
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24420864_JMS539.pdf",
+      "size": 599974
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24422144.pdf",
+      "size": 537262
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24423424.pdf",
+      "size": 354220
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24424192.pdf",
+      "size": 505844
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24425984.pdf",
+      "size": 590848
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24443904.pdf",
+      "size": 33328528
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24509184.pdf",
+      "size": 240765
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24509696.pdf",
+      "size": 227910
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24510208.pdf",
+      "size": 1718702
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24513792.pdf",
+      "size": 534211
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24515072.pdf",
+      "size": 567573
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24516352.pdf",
+      "size": 188554
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24516864.pdf",
+      "size": 326343
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24517632.pdf",
+      "size": 969341
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24519680.pdf",
+      "size": 405473
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24520704.pdf",
+      "size": 370460
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24521472.pdf",
+      "size": 1266615
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24524032.pdf",
+      "size": 552447
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24525312.pdf",
+      "size": 294446
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24526080.pdf",
+      "size": 9661015
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24545024.pdf",
+      "size": 1508773
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24548096.pdf",
+      "size": 1303463
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24550656.pdf",
+      "size": 451527
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24551680.pdf",
+      "size": 325390
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24552448.pdf",
+      "size": 4616979
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24561664.pdf",
+      "size": 449521
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24562688_USB2517_JZX_TR.pdf",
+      "size": 95252
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24562944.pdf",
+      "size": 507736
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24563968.pdf",
+      "size": 179905
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24564480.pdf",
+      "size": 173965
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24565504.pdf",
+      "size": 320567
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24566272.pdf",
+      "size": 317562
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24569856_JMS539.pdf",
+      "size": 324805
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24570624_JMB575_Product_Brief.pdf",
+      "size": 223971
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24571136_JMB572_Product_Brief.pdf",
+      "size": 214559
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24572672_JMB394_Product_Brief.pdf",
+      "size": 232549
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24573184_TUSB9261_USB_3_0_to_SATA_Bridge_datasheet_Rev_I.pdf",
+      "size": 742753
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24574720_00001637A_indd.pdf",
+      "size": 841099
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24576512.pdf",
+      "size": 453071
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24577536.pdf",
+      "size": 1450736
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24580608.pdf",
+      "size": 428031
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24581632.pdf",
+      "size": 668477
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24583168.pdf",
+      "size": 1051890
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24585472.pdf",
+      "size": 1008448
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24587520.pdf",
+      "size": 249655
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24588032.pdf",
+      "size": 3023732
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24594176.pdf",
+      "size": 662751
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24595712.pdf",
+      "size": 324430
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24596480.pdf",
+      "size": 442427
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24597504.pdf",
+      "size": 5280544
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24608000.pdf",
+      "size": 555002
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24609280.pdf",
+      "size": 665778
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24610816_JMB363_Data_Sheet_v1_0.pdf",
+      "size": 122900
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24611072.pdf",
+      "size": 585784
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24612352.pdf",
+      "size": 824638
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.3\\f24614144.pdf",
+      "size": 159202
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50353920.pdf",
+      "size": 99018
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50365440.pdf",
+      "size": 1692372
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50445312.pdf",
+      "size": 72835
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50445568.pdf",
+      "size": 74608
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50445824.pdf",
+      "size": 81458
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50446080.pdf",
+      "size": 66305
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50446336.pdf",
+      "size": 65964
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50446592.pdf",
+      "size": 73446
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50447104.pdf",
+      "size": 1008477
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50449152.pdf",
+      "size": 1420360
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50719232.pdf",
+      "size": 44497
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50719488.pdf",
+      "size": 1840515
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.36\\f50723328_4D6963726F736F667420576F7264202D20474232333132BCF2CCE5D6D0CEC4B1E0C2EBB1ED2E646F63.pdf",
+      "size": 1262150
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.38\\f51776512.pdf",
+      "size": 624160
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175007232_32M_Coxtex_M3_G.pdf",
+      "size": 6766136
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175025920_STM32F103CDE_Performance_Line_Datasheet_Chinese.pdf",
+      "size": 1908899
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175029760_Medium_density_performance_line_ARM_based_32_bit_MCU_with_64_or_128_KB_Flash_USB_CAN_7_timers_2_ADCs_9_com_interfaces.pdf",
+      "size": 2006428
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175033856.pdf",
+      "size": 2924487
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175039744_STM32F10xxx_20xxx_21xxx_L1xxxx_Cortex_M3_programming_manual.pdf",
+      "size": 2098835
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175044096_STM32_Technical_Reference_Manual_Chinese.pdf",
+      "size": 15929607
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175075328_STM32F101xx_STM32F102xx_STM32F103xx_STM32F105xx_and_STM32F107xx_advanced_ARM_based_32_bit_MCUs.pdf",
+      "size": 13099796
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175100928_PM0042.pdf",
+      "size": 475567
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.70\\f175101952_untitled.pdf",
+      "size": 302167
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.71\\f175599872_Schematic_Prints.pdf",
+      "size": 82080
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.71\\f175600128.pdf",
+      "size": 15535
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.71\\f175600384_STM32F103CDE_Performance_Line_Datasheet_Chinese.pdf",
+      "size": 1908899
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.77\\f176352512_Copyright_1995_Jean_J_Labrosse_Plantation_FL.pdf",
+      "size": 1021719
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.79\\f176503552_Copyright_1995_Jean_J_Labrosse_Plantation_FL.pdf",
+      "size": 1021719
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.84\\f177038592_4D6963726F736F667420576F7264202D20C8E7BACECAB9D3C3426F6F746C6F61646572D2FDB5BCB3CCD0F22E646F63.pdf",
+      "size": 198437
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.84\\f177074688_Copyright_1995_Jean_J_Labrosse_Plantation_FL.pdf",
+      "size": 1021719
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.89\\f177549056_Copyright_1995_Jean_J_Labrosse_Plantation_FL.pdf",
+      "size": 1021719
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.90\\f177595648_Copyright_1995_Jean_J_Labrosse_Plantation_FL.pdf",
+      "size": 1021719
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.92\\f177694464_Copyright_1995_Jean_J_Labrosse_Plantation_FL.pdf",
+      "size": 1021719
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.96\\f178270720_Copyright_1995_Jean_J_Labrosse_Plantation_FL.pdf",
+      "size": 1021719
+    }
+  ],
+  "pngs": [
+    {
+      "path": "C:\\huifu\\recup_dir.1\\f21517312.png",
+      "size": 6884571
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24254720.png",
+      "size": 9894397
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24277248.png",
+      "size": 5840028
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.2\\f24291840.png",
+      "size": 6350274
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.5\\f25713664.png",
+      "size": 4345525
+    },
+    {
+      "path": "C:\\huifu\\recup_dir.5\\f25773568.png",
+      "size": 4723710
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+﻿DIAGNOSIS: PLUGIN UPDATES FAILED IN THE DESKTOP CLIENT
+=====================================================
+Time : 2026-10-20 22:09
+
+SOURCE
+  User-supplied market log (C:\Users\徐丰哲\Downloads\dsh-market-log.txt), cross-checked against the live
+  profile on disk and against the registry. The log's own UTC timestamps convert to 22:03:26-22:05:09
+  local; the DSH host process currently running started at 22:04:51, so the failed attempts happened in
+  the PREVIOUS process and the user restarted afterwards.
+
+ROOT CAUSE: A VERSION GAP THAT CROSSED A DESKTOP UPGRADE
+  Desktop runtime "0.2.1-rc.2", built-in @deepseek-ai/dsh-settings "v0.2.1-rc.2".
+  Installed dshmarket 1.66.7, published 2026-09-30 - twenty days old. Its peer range for dsh-settings is
+      ^0.1.0-rc.7 || ^0.1.1-rc.2 || ^0.1.2-alpha.2 || ^0.2.0-rc.1
+  and 0.2.1-rc.2 is NOT in it. The market UI therefore could not attach: the log records
+  "plugin cards rendered: 0" and "dsh host: not locatable from this process".
+  dshmarket 1.66.44 (published 2026-10-19, i.e. yesterday) appends "|| ^0.2.1-alpha.3 || ^0.2.1-rc.1",
+  so it is the first version compatible with this desktop build. Version timeline checked:
+      1.66.7  2026-09-30     <- installed
+      1.66.20 2026-10-13
+      1.66.30 2026-10-16
+      1.66.40 2026-10-18
+      1.66.44 2026-10-19     <- first that supports 0.2.1
+
+THREE INDEPENDENT FAILURES, EACH WITH ITS OWN MECHANISM
+  1. exit=127 on every profile mutation
+     "官方桌面客户端的这个插件操作需要在「设置 → 插件」里完成；市场无法通过命令行修改桌面端的 profile"
+     The desktop profile is owned exclusively by the Electron app. This matches what I measured earlier by
+     hand: "dsh plugin --profile desktop" is refused even for a read-only list. Not a bug - a boundary.
+     Consequence: the market page's install/update buttons can never touch desktop plugins.
+
+  2. "already-installed" when updating dshmarket itself
+     package.json declares dshmarket ^1.66.7. Semver-wise 1.66.44 already satisfies ^1.66.7, so pnpm
+     reports nothing to do. The market wanted to move to 1.66.44 but its own dependency range told pnpm
+     the job was already done. Self-update is also structurally awkward because the running plugin cannot
+     replace its own files.
+
+  3. "duplicate exact route /groupchat"
+     Two earlier failures, then the groupchat hot-update was rejected with
+     "dsh: warning: 1 entry did not activate / groupchat (dsh-groupchat): Error: webserver: duplicate exact route "/groupchat""
+     The plugin's own code documents this (lib/index.js L64-79): on re-activation in the same process, either
+     a previous fiber is still alive (duplicate activation is then ignored) or it was disposed and only its
+     route lingers in the webserver table - and the reclamation is wrapped in try/catch that merely warns
+     ("stale /groupchat route cleanup failed"). So a HOT re-activation can collide with its own stale route.
+     This is a plugin-side reactivation bug, not a configuration error: the profile has exactly one
+     groupchat entry, one physical copy (v0.6.0) and no duplicate in cordis.patch.yml.
+
+ALSO IN THE LOG, UNRELATED AND EXPECTED
+  @chushiz/dsh-archive-manager@0.5.0 was refused on 2026-10-05 with code "incompatible-version"
+  (peer @deepseek-ai/dsh-client-runtime ^0.1.0-rc.8 vs runtime 0.2.0-rc.2). The gate worked as designed.
+
+REMEDY, IN ORDER OF SAFETY
+  A. In-app, recommended: Settings -> Plugins -> UNINSTALL dshmarket, then INSTALL it again (a fresh
+     install resolves to latest 1.66.44 instead of being argued away by the ^ range), then restart DSH.
+     Expected result: card list renders again and the market regains the ability to see dsh 0.2.1.
+  B. By hand (I can do it, but the app owns this profile): pin "dshmarket": "1.66.44" in
+     %USERPROFILE%\.dsh\profiles\desktop\package.json, run pnpm install in that folder, restart DSH.
+     Risk: the app may reassert its own view of the profile on start.
+  C. Do nothing about dshmarket and just live with a dormant market page. The other plugins are unaffected:
+     dsh-guard-repeat-output 2.1.7 declares "@deepseek-ai/dsh >=0.1.6-alpha.2 <0.3.0-0" so 0.2.1 is in range,
+     and archived-sessions 0.2.0 / groupchat 0.6.0 loaded fine (bundles all report ok).
+
+GOING FORWARD
+  - On the desktop build, never use the market page for install/update: always Settings -> Plugins.
+  - When updating dsh-groupchat: disable it, restart, update, re-enable (or update then restart immediately)
+    so the hot re-activation path that trips the stale-route bug is never taken.
+  - groupchat's gitee remote exposes only refs/heads/main (HEAD d8b1d13c), no tags, so there is no way to
+    tell whether a newer version exists without cloning it.

@@ -1,0 +1,121 @@
+扫描目录: C:\huifu
+扫描文本文件数: 21326
+
+==============================================================================
+rootAllowList   ->   storage-policy.json   (命中 1)
+    C:\huifu\recup_dir.2\f24408832.py                             3.4 KB
+==============================================================================
+imageGenerationBudget   ->   ai-tools.json   (命中 5)
+    C:\huifu\recup_dir.1\f21532160.txt                           10.1 KB
+    C:\huifu\recup_dir.1\f21532181.txt                            2.0 KB
+    C:\huifu\recup_dir.2\f24378880.py                             5.0 KB
+    C:\huifu\recup_dir.2\f24408832.py                             3.4 KB
+    C:\huifu\recup_dir.2\f24410368.txt                            2.0 KB
+==============================================================================
+output-storage-policy   ->   output-storage-policy.md   (命中 2)
+    C:\huifu\recup_dir.1\f0020224.txt                             6.6 KB
+    C:\huifu\recup_dir.2\f24408832.py                             3.4 KB
+==============================================================================
+ai-tool-policy   ->   ai-tool-policy.md   (命中 18)
+    C:\huifu\recup_dir.1\f21532160.txt                           10.1 KB
+    C:\huifu\recup_dir.1\f21532181.txt                            2.0 KB
+    C:\huifu\recup_dir.1\f21532429.txt                            3.5 KB
+    C:\huifu\recup_dir.1\f21533184.txt                            2.7 KB
+    C:\huifu\recup_dir.1\f21533440.txt                            2.1 KB
+    C:\huifu\recup_dir.1\f21538304.txt                            3.1 KB
+    C:\huifu\recup_dir.1\f21543176.txt                            2.7 KB
+    C:\huifu\recup_dir.1\f21546246.txt                            3.0 KB
+    C:\huifu\recup_dir.1\f21546496.txt                            2.8 KB
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.1\f21556480.txt                            3.1 KB
+    C:\huifu\recup_dir.2\f24378880.py                             5.0 KB
+    C:\huifu\recup_dir.2\f24379136.py                             0.4 KB
+    C:\huifu\recup_dir.2\f24379392.py                             3.9 KB
+    C:\huifu\recup_dir.2\f24392704.txt                            2.7 KB
+    C:\huifu\recup_dir.2\f24408832.py                             3.4 KB
+    C:\huifu\recup_dir.2\f24409344.txt                            2.4 KB
+    C:\huifu\recup_dir.2\f24409600.txt                            0.9 KB
+==============================================================================
+Test-StoragePolicy   ->   Test-StoragePolicy.ps1   (命中 1)
+    C:\huifu\recup_dir.1\f0020224.txt                             6.6 KB
+==============================================================================
+Install-GlobalPolicy   ->   Install-GlobalPolicy.ps1   (命中 7)
+    C:\huifu\recup_dir.1\f0020224.txt                             6.6 KB
+    C:\huifu\recup_dir.1\f21532160.txt                           10.1 KB
+    C:\huifu\recup_dir.1\f21532181.txt                            2.0 KB
+    C:\huifu\recup_dir.1\f21532429.txt                            3.5 KB
+    C:\huifu\recup_dir.1\f21533184.txt                            2.7 KB
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.1\f21556480.txt                            3.1 KB
+==============================================================================
+New-ConversationWorkspace   ->   New-ConversationWorkspace.ps1   (命中 1)
+    C:\huifu\recup_dir.1\f0020224.txt                             6.6 KB
+==============================================================================
+conversation-registry   ->   conversation-registry.json   (命中 3)
+    C:\huifu\recup_dir.1\f0020224.txt                             6.6 KB
+    C:\huifu\recup_dir.2\f24408832.py                             3.4 KB
+    C:\huifu\recup_dir.2\f24409088.py                             3.3 KB
+==============================================================================
+全局对话输出文件存放准则   ->   global-agents.md   (命中 0)
+==============================================================================
+工作区输出文件存放准则   ->   AGENTS.md 工作区   (命中 0)
+==============================================================================
+本地 AI 工具（视觉 / 文档）   ->   规则 8   (命中 0)
+==============================================================================
+AI 工具调用规则   ->   ai-tool-policy 标题   (命中 0)
+==============================================================================
+vision_read_document   ->   AI 规则/服务端   (命中 19)
+    C:\huifu\recup_dir.1\f21512448.py                             1.8 KB
+    C:\huifu\recup_dir.1\f21515520.py                             2.0 KB
+    C:\huifu\recup_dir.1\f21516032.txt                            1.5 KB
+    C:\huifu\recup_dir.1\f21516813.txt                            1.4 KB
+    C:\huifu\recup_dir.1\f21517056.txt                            3.7 KB
+    C:\huifu\recup_dir.1\f21531648.txt                            2.8 KB
+    C:\huifu\recup_dir.1\f21532160.txt                           10.1 KB
+    C:\huifu\recup_dir.1\f21532429.txt                            3.5 KB
+    C:\huifu\recup_dir.1\f21533184.txt                            2.7 KB
+    C:\huifu\recup_dir.1\f21537792.txt                            1.4 KB
+    C:\huifu\recup_dir.1\f21538304.txt                            3.1 KB
+    C:\huifu\recup_dir.1\f21542656.txt                            1.2 KB
+    C:\huifu\recup_dir.1\f21545984.txt                            1.1 KB
+    C:\huifu\recup_dir.1\f21546246.txt                            3.0 KB
+    C:\huifu\recup_dir.1\f21546496.txt                            2.8 KB
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.2\f24377344.txt                            0.6 KB
+    C:\huifu\recup_dir.2\f24378624.txt                            0.8 KB
+    C:\huifu\recup_dir.2\f24409088.py                             3.3 KB
+==============================================================================
+生图的时间预算   ->   ai-tool-policy 11   (命中 2)
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.2\f24409088.py                             3.3 KB
+==============================================================================
+硬件寿命   ->   ai-tool-policy 10   (命中 4)
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.1\f21556480.txt                            3.1 KB
+    C:\huifu\recup_dir.2\f24409088.py                             3.3 KB
+    C:\huifu\recup_dir.2\f24409856.txt                            2.6 KB
+==============================================================================
+模型变更后的运维规则   ->   ai-tool-policy 12   (命中 3)
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.2\f24392704.txt                            2.7 KB
+    C:\huifu\recup_dir.2\f24409856.txt                            2.6 KB
+==============================================================================
+思考语言   ->   中文思考规则   (命中 2)
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.2\f24409088.py                             3.3 KB
+==============================================================================
+local-ai-toolset-guide   ->   工具集指南   (命中 7)
+    C:\huifu\recup_dir.1\f21546752.txt                           22.0 KB
+    C:\huifu\recup_dir.1\f21548800.txt                            1.6 KB
+    C:\huifu\recup_dir.1\f21550336.txt                            1.3 KB
+    C:\huifu\recup_dir.1\f21552128.txt                            1.0 KB
+    C:\huifu\recup_dir.1\f21553664.txt                            1.0 KB
+    C:\huifu\recup_dir.1\f21556480.txt                            3.1 KB
+    C:\huifu\recup_dir.2\f24409088.py                             3.3 KB
+==============================================================================
+CH634DS1   ->   参考资料   (命中 5)
+    C:\huifu\recup_dir.1\f21505792.py                             0.5 KB
+    C:\huifu\recup_dir.1\f21506048.py                             2.2 KB
+    C:\huifu\recup_dir.1\f21507840.txt                            3.0 KB
+    C:\huifu\recup_dir.1\f21512448.py                             1.8 KB
+    C:\huifu\recup_dir.1\f21515520.py                             2.0 KB

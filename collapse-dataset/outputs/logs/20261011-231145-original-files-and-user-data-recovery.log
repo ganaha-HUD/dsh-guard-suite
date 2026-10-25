@@ -1,0 +1,51 @@
+ORIGINAL FILES AND USER DATA RECOVERED FROM C:\huifu
+====================================================
+Time : 2026-10-11 23:11
+
+METHOD
+  21327 text files in the PhotoRec dump (all names lost) were scanned by content fingerprint, and
+  56797 files were scanned by file header. Fidelity order used: byte-exact original > structural rebuild.
+
+ORIGINALS RECOVERED (byte-exact)
+  scripts\build-toolset-guide-docx.py            22.5 KB  (v1.4 builder, complete: ends with doc.save)
+  scripts\audit-rules-scan.py                     3.5 KB
+  scripts\fetch-hf-repo.js                        3.0 KB
+  scripts\render-pdf-pages.py                     2.7 KB
+  scripts\verify-pdf-text-layer-vs-ocr.py         2.2 KB
+  scripts\verify-vision-v14.py                    2.0 KB
+  scripts\verify-vision-v13.py                    1.8 KB
+  scripts\sync-rules-everywhere.py                3.3 KB
+  logs\20260928-125000-storage-standard-setup.log 6.8 KB
+  logs\20261005-075116-t2i-outage-fixed.log       2.7 KB
+  logs\20261004-160000-npu-input-limit-...log     3.0 KB
+  logs\20261004-210000-toolset-guide-...log       3.1 KB
+  logs\20261004-213000-anomaly-score-...log       2.7 KB
+  workspace\_recovery\ai-tools.json.recovered-v1.8.0   10.4 KB (used as the rebase source)
+
+HIGHER FIDELITY THAN A PURE REBUILD
+  policy\ai-tools.json was rebased on the recovered v1.8.0 original: this restored fields my memory had
+  missed - reservedToolsNaming.planned (2 entries) and tools[0].prefer - and, more importantly, the
+  ORIGINAL routing order (12 entries), which differs from my reconstruction. Only the six v1.9.0 deltas
+  were then applied on top (encryptedPdf, returnErrorsAsText, server 1.11.0, health-check wording,
+  policyVersion, updatedAt) plus an alternatives block.
+
+DELIVERABLE REGENERATED FROM THE ORIGINAL SCRIPT
+  local-ai-toolset-guide-v1.docx, 46 KB, produced by the recovered builder (not rewritten by hand):
+  structure check verdict=pass, 83 paragraphs, 14 tables, 9067 chars, sections for FLUX generation,
+  4.5 maintenance rules, 11 generation budget, hardware longevity and the v1.4 version record.
+
+USER FILES RESTORED (verified)
+  reference_file\CH634DS1.PDF                        610.0 KB, 33 pages
+      original record: 33 pages, 610.0 KB, page 1 = 1267 chars, page 5 = 454 chars
+      recovered file:  page 1 = 1267 chars, page 5 = 454 chars, page 21 = 1404, page 33 = 395  -> exact
+  reference_file\720421F869216DB8CE295D95710712E5.png  6723.2 KB, PNG 4096x2730 RGB
+      original record: 6723.2 KB  -> byte count matches exactly
+  (a second identical PDF copy and an unrelated 45-page CH634 manual were deliberately NOT placed in
+   reference_file, so that only verified originals go there.)
+
+FINAL SELF TEST
+  Test-StoragePolicy.ps1 -> FAIL=0 WARN=0 with the reference folder now holding 2 user files.
+
+NOTE FOR THE USER
+  policy\ plus tools\ are under 100 KB in total. Now that they exist again, keeping a copy outside the
+  removable E: volume (or in version control) would make the next incident trivial instead of expensive.

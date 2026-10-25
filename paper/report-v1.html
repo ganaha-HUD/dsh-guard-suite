@@ -1,0 +1,175 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Delayed Collapse in an LLM Tool-Use Session</title>
+<style>
+@page { size: A4; margin: 18mm 16mm; }
+body { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+       font-size: 10.5pt; line-height: 1.6; color: #111827; max-width: 190mm;
+       margin: 0 auto; padding: 12mm 8mm; }
+h1 { font-size: 19pt; text-align: center; margin: 0 0 14pt 0; line-height: 1.3; }
+h2 { font-size: 13.5pt; margin: 18pt 0 7pt 0; border-bottom: 1px solid #e5e7eb;
+     padding-bottom: 3pt; page-break-after: avoid; }
+h3 { font-size: 11.5pt; margin: 13pt 0 5pt 0; page-break-after: avoid; }
+p { margin: 0 0 7pt 0; text-align: justify; }
+.meta { text-align: center; font-size: 9.5pt; color: #374151; margin: 1pt 0; }
+.meta strong { color: #111827; }
+hr { border: none; border-top: 1px solid #e5e7eb; margin: 12pt 0; }
+table { border-collapse: collapse; width: 100%; margin: 8pt 0 10pt 0;
+        font-size: 8.5pt; page-break-inside: avoid; }
+th, td { border: 1px solid #d1d5db; padding: 3pt 5pt; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; font-weight: 600; }
+tr { page-break-inside: avoid; }
+code { font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+       background: #f3f4f6; padding: 0 2px; border-radius: 2px; }
+pre { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 3px;
+      padding: 7pt 9pt; overflow-x: auto; font-size: 8.5pt; page-break-inside: avoid; }
+pre code { background: none; padding: 0; }
+img { max-width: 100%; display: block; margin: 10pt auto; }
+ul, ol { margin: 5pt 0 9pt 0; padding-left: 22pt; }
+li { margin: 3pt 0; text-align: justify; }
+@media print { body { padding: 0; } h1 { page-break-after: avoid; } }
+</style></head><body>
+<h1>Delayed Collapse in an LLM Tool-Use Session: A Preliminary Case Study</h1>
+<p class="meta"><strong>Author:</strong> Fengzhe Xu (ganaha-HUD) <strong>Date:</strong> 2026-10-25 <strong>Status:</strong> Draft v1.0 — empirical report, not a causal claim <strong>Data and code:</strong> https://github.com/ganaha-HUD/dsh-guard-suite <strong>Dataset DOI:</strong> 10.5281/zenodo.XXXXXXX  *(placeholder — replace after the Zenodo deposit is published)*</p>
+<hr>
+<h2>Abstract</h2>
+<p>In a single 137-turn tool-use session, the assistant&#x27;s per-step text output fell by roughly two thirds while the density of completion assertions stayed flat, and a recurring &quot;OK ✓&quot; template rose from essentially zero to twelve hits per step. The collapse was not immediate: it began about 25 turns after a persona block was injected mid-session, and only became frequent after the template had accumulated for another 25 turns. The same comparison yields a small effect size for tool-call density at the step level (Cliff&#x27;s δ = 0.144) but a medium-to-large effect at the turn level (δ = 0.521), because the step-level variable is discrete and its median saturates at 1. A repetition guard with a calibrated conviction threshold of 0.80 fired zero times during the collapse; the maximum duplicate share observed was 0.44.</p>
+<hr>
+<h2>1. How this started</h2>
+<p>On 2026-10-24 I asked an assistant to check whether a plugin was still active. It answered in three seconds. The transcript looked like this: five occurrences of the word <code>grep</code> inside the reasoning channel, each followed by a checkmark, and not a single tool call. No prose either. The turn simply ended.</p>
+<p>That was odd enough to investigate, but not enough to write anything about. What made it worth a report was the pattern. I exported the full session log, wrote a small parser, and found that the same shape — described work, no execution, confident tone — had been recurring for days.</p>
+<p>This report does two things. First, it records what I measured, with the exact definitions, so the observation is on the record and can be checked or refuted. Second, it points out a statistical trap I walked into and then out of: the same data gives a small effect at one level of aggregation and a medium-to-large effect at another, and the reason is not noise.</p>
+<p>I am not claiming that the persona caused the collapse. The data cannot support that, and Section 6 says why in detail.</p>
+<hr>
+<h2>2. Data</h2>
+<p>One session, <code>session-3b54e160</code>, from the DSH desktop application (Electron host, <code>deepseek-flash</code> via <code>deepseek-official</code>). It ran from 2026-09-28 to 2026-10-24 in a workspace on <code>E:\Deepseek</code>, on a Windows 11 machine with an Intel Core Ultra 5 338H and no discrete GPU.</p>
+<p>The log is append-only and was written by the harness, not by the model. Totals:</p>
+<table><thead><tr><th>item</th><th>count</th></tr></thead><tbody>
+<tr><td>turns</td><td>137</td></tr>
+<tr><td>events</td><td>10,816</td></tr>
+<tr><td>assistant steps</td><td>1,384</td></tr>
+<tr><td>tool calls</td><td>1,393</td></tr>
+<tr><td>context compactions</td><td>5</td></tr>
+</tbody></table>
+<p>Three properties of the environment matter for interpretation, and all three are documented in the released package:</p>
+<ol><li>A set of rule files was active, injected into every request. They mandate where output files go and when certain tools must be used, which raises the baseline tool-call rate.</li><li>At turn 86, a 1,405-character persona block was inserted into the system prompt. Before that turn the global instruction file was 10,859 bytes; after it, 14,546.</li><li><code>dsh-guard-repeat-output</code> v2.1.7, a repetition guard, was installed and running from 2026-10-20 onward.</li></ol>
+<p>The persona insertion is what makes this session interesting and also what makes it confounded. I treat it as a descriptive boundary, not as a treatment.</p>
+<hr>
+<h2>3. Definitions</h2>
+<p>Everything in this section is implemented in <code>annotate-session.mjs</code> in the released repository, so the definitions are executable rather than prose.</p>
+<h3>3.1 Unit of analysis</h3>
+<p>A <strong>step</strong> is one <code>assistant/message</code> event: the model output between two tool results. A turn may contain several steps. All 1,384 steps were annotated; there is no sampling.</p>
+<p>Each row carries the event&#x27;s <code>seq</code>, so any label can be traced back to the exact byte range in the append-only log.</p>
+<h3>3.2 Three quantities</h3>
+<p><strong>Tool calls.</strong> The number of <code>tool-call</code> content blocks in the message. This is a count, and in this session it is usually 0 or 1.</p>
+<p><strong>Characters.</strong> The sum of characters in <code>reasoning</code> and <code>text</code> blocks. It measures how much the model produced, not how much of it was useful.</p>
+<p><strong>Template hits.</strong> Occurrences of a specific self-confirmation pattern. The literal form in the log is <code><strong>好</strong> ✓</code> (markdown bold around a Chinese &quot;good&quot;), sometimes with <code>（输出 ✓）</code> interleaved. The first regex I wrote matched <code>好 ✓</code> and found nothing, because of the asterisks. The working pattern is:</p>
+<pre><code>好[^\n]{0,6}✓|（输出[^\n]{0,4}✓）|\(输出[^\n]{0,4}✓\)</code></pre>
+<p>This is a deliberately narrow target: it catches the confirmation loop, not general repetition. That the model writes markdown bold around a checkmark is itself worth noting: it is fabricating the *appearance* of a completed step, which is the same move as fabricating a tool call, one layer up.</p>
+<h3>3.3 Labels</h3>
+<p>A step is labeled <code>collapse</code> when either condition holds:</p>
+<ul><li><strong>simulated execution:</strong> at least three action verbs appear in the reasoning (检查, 查看, 搜索, grep, 验证, 执行, 排查 …), no tool call was made, and the reasoning is at least 120 characters;</li><li><strong>think-only:</strong> no tool call, fewer than 80 characters of prose, and at least 300 characters of reasoning.</li></ul>
+<p>A step is labeled <code>suspect</code> when <code>template_hits &gt;= 5</code> but neither collapse condition holds. Everything else is <code>normal</code>. <code>collapse</code> takes precedence over <code>suspect</code>.</p>
+<p>The 120-character floor exists because my first test fixture was 45 characters and silently produced a false negative. The 5-hit threshold is absolute rather than proportional because the worst step contains 78 hits inside 3,757 characters — about 20% — so any proportion threshold either fires constantly or never fires.</p>
+<h3>3.4 Boundaries</h3>
+<p>Two turns are used as boundaries throughout:</p>
+<ul><li><strong>T86</strong>, where the persona block was inserted;</li><li><strong>T111</strong>, where collapse frequency jumps.</li></ul>
+<p><code>pre</code> means T1–T85 (926 steps), <code>post</code> means T86–T137 (458 steps).</p>
+<hr>
+<h2>4. Results</h2>
+<h3>4.1 The shape of the run</h3>
+<img src="figures\fig-behavior-over-turns.png" alt="behavior over turns">
+<p>Splitting the run into four bands makes the timing visible:</p>
+<table><thead><tr><th>band</th><th>steps</th><th>tool calls / step</th><th>chars / step</th><th>template hits / step</th><th>collapses</th></tr></thead><tbody>
+<tr><td>T1–40</td><td>412</td><td>1.16</td><td>3,782</td><td>0.00</td><td>1</td></tr>
+<tr><td>T41–85</td><td>514</td><td>0.98</td><td>1,877</td><td>0.07</td><td>0</td></tr>
+<tr><td>T86–110</td><td>213</td><td>0.90</td><td>1,034</td><td>4.99</td><td>0</td></tr>
+<tr><td>T111–137</td><td>245</td><td>0.90</td><td>792</td><td>18.02</td><td>9</td></tr>
+</tbody></table>
+<p>Three observations, in order of how confident I am about them.</p>
+<p>Characters per step decline monotonically from the first band. This is the trend I trust most, because it starts long before the persona and continues past it. Whatever caused it, it was already operating at turn 1.</p>
+<p>Template hits behave differently. They are essentially absent until T86, then appear at about 5 per step, then jump to 18 per step after T111. That step change coincides with the persona insertion.</p>
+<p>Collapses are absent from T86–110 despite the template already being present. They appear only in the last band. So the ordering is persona → template → collapse, with a gap of roughly 25 turns between the first two steps of that chain.</p>
+<h3>4.2 Pre/post comparison</h3>
+<table><thead><tr><th>metric</th><th>pre mean</th><th>post mean</th><th>change</th></tr></thead><tbody>
+<tr><td>tool calls / step</td><td>1.06</td><td>0.90</td><td>−15%</td></tr>
+<tr><td>chars / step</td><td>2,725</td><td>904</td><td>−67%</td></tr>
+<tr><td>template hits / step</td><td>0.04</td><td>11.96</td><td>from 0 to 12</td></tr>
+<tr><td>assertions / kchar</td><td>0.55</td><td>1.10</td><td>+100%</td></tr>
+</tbody></table>
+<p>The assertion density doubling while characters fall is the combination that makes the output look confident and empty at the same time.</p>
+<h3>4.3 The part I got wrong first</h3>
+<p>My initial statistical comparison treated each of the 926 and 458 steps as an independent sample and ran Mann-Whitney U. It produced p = 2e-10 for tool calls, which looks decisive.</p>
+<p>It is not, for two reasons.</p>
+<p>First, steps within a turn are not independent. Each step conditions on the previous one; a turn is a chain, not a bag. Treating them as independent inflates the effective sample size and deflates p-values. This is pseudo-replication.</p>
+<p>Second, and more interesting, the step-level effect size for tool calls is small: Cliff&#x27;s δ = 0.144. The median does not move at all (1 → 1). The variable is discrete, most steps call exactly one tool, and the median saturates.</p>
+<p>Aggregating to the turn level and repeating the test fixes both problems at once:</p>
+<table><thead><tr><th>metric</th><th>step δ</th><th>turn δ</th><th>step p</th><th>turn p</th></tr></thead><tbody>
+<tr><td>tool calls</td><td><strong>+0.144 (small)</strong></td><td><strong>+0.521 (medium–large)</strong></td><td>2.0e−10</td><td>3.6e−07</td></tr>
+<tr><td>chars</td><td>+0.564</td><td>+0.828</td><td>1.5e−65</td><td>7.6e−16</td></tr>
+<tr><td>template hits</td><td>−0.664</td><td><strong>−0.986 (very large)</strong></td><td>2.5e−157</td><td>5.5e−25</td></tr>
+<tr><td>falsification words</td><td>−0.027</td><td>−0.161</td><td>0.036</td><td>0.051</td></tr>
+</tbody></table>
+<p>The template effect survives and strengthens. The character effect also strengthens. But tool calls reverse direction in magnitude: small at the step level, medium-to-large per turn.</p>
+<p>The explanation is unglamorous. Averaging a mostly-binary variable across steps inside a turn compresses it toward 1 — a classic discretization artifact. Averaging across turns preserves the between-turn variation that the collapse actually consists of. The collapse is a property of turns becoming shorter and emptier, not of individual steps calling fewer tools.</p>
+<p>So the honest statement is the awkward one: the effect size depends on the aggregation unit, and both numbers should be reported. Reporting only the turn-level figure would overstate the per-step behavioural change; reporting only the step-level figure would hide it.</p>
+<h3>4.4 The precursor signal</h3>
+<p>The <code>suspect</code> label turns out to be more useful than I expected. In the post period it covers 59.6% of steps while <code>collapse</code> covers 1.97%. Most steps enter the template-heavy state without fully collapsing.</p>
+<p>Conditional on a suspect turn, the probability of a collapse within k turns:</p>
+<table><thead><tr><th>condition</th><th>≤1</th><th>≤3</th><th>≤5</th><th>≤10</th><th>≤20</th></tr></thead><tbody>
+<tr><td>suspect turn</td><td>16.7%</td><td>27.8%</td><td>38.9%</td><td>66.7%</td><td><strong>94.4%</strong></td></tr>
+<tr><td>baseline</td><td>6.5%</td><td>10.5%</td><td>15.3%</td><td>27.4%</td><td>44.4%</td></tr>
+</tbody></table>
+<img src="figures\fig-suspect-to-collapse.png" alt="suspect to collapse">
+<p>The gap is the point. Even after twenty turns the baseline stays below 45%, while a single suspect turn pushes the probability past 94%. Template density is the sensitive precursor; the failure rate lags it by many turns.</p>
+<p>The run lengths are also informative. The first two collapse events are preceded by 16 and 11 consecutive suspect turns. After T126, every collapse is preceded by exactly one suspect turn. The incubation period shrinks until collapse happens on the next turn.</p>
+<p>This is the strongest argument in the data that shrink is a process rather than a switch. It also suggests a cheap monitoring rule: watch the template rate, not the failure rate.</p>
+<h3>4.5 What the existing guard saw</h3>
+<p>Nothing.</p>
+<p><code>dsh-guard-repeat-output</code> 2.1.7 convicts when the duplicate share of a window reaches 0.80 and the distinct k-gram ratio falls below 0.30. Over the entire collapse window its log contains zero records. The maximum duplicate share I measured in this session is 0.44.</p>
+<p>That is not a bug in the guard. It was built for a different failure: one phrase emitted 27,269 times, 1.37 million characters. Shrink-collapse produces no such signature because the text is getting shorter, not longer.</p>
+<hr>
+<h2>5. Discussion</h2>
+<h3>5.1 Three timescales</h3>
+<p>The data separates into three processes that happen at different rates, and conflating them is the main interpretive risk in this session.</p>
+<p>Text length declines continuously from turn 1. It is the slowest process and the least attributable to any single event.</p>
+<p>Template formation starts at T86 and is abrupt. This is the only process that lines up cleanly with the persona insertion.</p>
+<p>Collapse is rare until template density reaches roughly 18 per step, then becomes frequent. It is a downstream effect.</p>
+<p>If I had only looked at the pre/post aggregate, I would have attributed all three to the persona. The band table is what prevents that mistake.</p>
+<h3>5.2 Why the step-level test was misleading</h3>
+<p>Pseudo-replication is a familiar problem, but the interesting part here is that it interacted with discretisation.</p>
+<p>With a continuous variable, aggregating to a coarser unit reduces n and widens confidence intervals, but the point estimate usually stays put. With a variable that is binary for most observations, the coarser-unit mean carries information the finer-unit median throws away. The median of a mostly-one indicator is one, before and after, regardless of how much the mean moved.</p>
+<p>I would not have caught this if I had only reported p-values. The effect size is what exposed it.</p>
+<h3>5.3 What this suggests for monitoring</h3>
+<p>If the mechanism hypothesis is right — template accumulation eventually contaminating the step-level decision about whether work was done — then the observable to monitor is the template rate, not the failure count.</p>
+<p>The conversion numbers support a concrete threshold: once a turn is template-heavy, the probability of collapse within twenty turns is 94%. That is enough lead time to intervene, and the intervention need not be sophisticated. In a companion implementation I use a notice that demands one real tool call, on the grounds that telling the model to &quot;be more careful&quot; is unverifiable and, per the self-correction literature, often counterproductive.</p>
+<h3>5.4 Relation to existing work</h3>
+<p>Repetition in neural generation is well documented, but the documented shape is expansion: degenerate loops that grow. Text degeneration under greedy decoding, unlikelihood training to suppress repetition, and the guard I tested all assume the output gets longer.</p>
+<p>The failure here is the opposite. I propose calling the two shapes <strong>Expansion-collapse</strong> (the documented one: output grows and repeats until truncated) and <strong>Shrink-collapse</strong> (the one observed here: output contracts toward template while assertion density holds). The naming matters because the two require different detectors; a threshold tuned for one is blind to the other, as Section 4.5 shows with a concrete number.</p>
+<p>The closest relatives in the literature are not about repetition at all: self-correction without external feedback degrading reasoning, chain-of-thought that rationalises rather than reports, sycophancy toward user framing, and calibration that only appears when explicitly elicited. All four describe a model that produces plausible text disconnected from ground truth. Shrink-collapse is that disconnection measured over time.</p>
+<hr>
+<h2>6. Limitations</h2>
+<p>This is one session. It establishes that the pattern occurred and gives exact definitions for it. It does not establish prevalence, and no rate should be quoted without qualification.</p>
+<p>The persona insertion is confounded with time and context length. The session also grew longer, compaction ran five times, and the task mix changed. Separating these requires a control arm that does not exist yet.</p>
+<p>There is no inter-annotator agreement. The labels come from one fixed protocol applied by one annotator. A second annotator on 10% of the steps would be the minimum for a formal claim.</p>
+<p>The signals are lexical and language-specific. The verb lists are Chinese and English; other languages would need their own.</p>
+<p>The evidence metric counts path-like strings and numeric-with-unit patterns. A fabricated path raises it exactly like a real one. Nothing here distinguishes evidence from the appearance of evidence.</p>
+<p>Finally, the direction of the effect for tool calls depends on the aggregation unit, as Section 4.3 shows. Any single number quoted from this dataset for that variable is incomplete.</p>
+<hr>
+<h2>7. Next step</h2>
+<p>The obvious experiment is a within-task A/B: same prompt sequence, same tool set, with and without the persona block. If the template rate diverges while the character trend does not, the persona hypothesis gains support. If both diverge together, the persona is a proxy for something else.</p>
+<p>I intend to run that. Until then, this document should be cited as an observation, not as a mechanism.</p>
+<hr>
+<h2>8. Data and code</h2>
+<p>Everything is in one repository:</p>
+<ul><li><code>annotate-session.mjs</code> — produces the labels from the raw log</li><li><code>summarize-turns.mjs</code> — turn-level rollup</li><li><code>collapse-check.mjs</code> — the detector used in the companion implementation</li><li><code>annotations/steps.jsonl</code> — 1,384 annotated steps</li><li><code>session/session.v4.jsonl</code> — the decompressed log</li><li><code>docs/CONFOUNDERS.md</code> — the environment and its confounds</li><li><code>analysis/</code> — the statistics and the figure in this report</li></ul>
+<p>The session log contains only my own prompts and model output. Paths are retained because the claims depend on them; no credentials or third-party personal data are present, which was checked by scanning every file in the package.</p>
+<hr>
+<h2>Appendix A. Annotation rules, verbatim</h2>
+<p><strong>Action verbs</strong> (counted in reasoning only):检查, 查看, 搜索, 搜一下, grep, 读一下, 看一下, 验证一下, 运行一下, 执行一下, 调用一下, 排查, 定位, 确认一下, 试试</p>
+<p><strong>Completion assertions</strong> (counted in reasoning and text):已完成, 成功了, 成功, 可用, 已就绪, 已修复, 已交付, 跑通, 一切正常, 没问题, 证明, 说明, 就是, 根本原因, 彻底, 完全</p>
+<p><strong>Hedges:</strong>可能, 疑似, 未验证, 不确定, 推测, 假设, 待确认, 也许, 大概, 似乎, 没有验证, 未证实, 存疑</p>
+<p><strong>Falsification language:</strong>不通, 行不通, 放弃, 证伪, 反例, 死路, 不可能, 走不通, 推翻, 假设不成立, 这条路, 错在</p>
+<p><strong>Evidence markers:</strong> drive-letter paths, URLs, <code>exit code</code>, <code>HTTP nnn</code>, <code>sha256</code>, and number-plus-unit pairs (B, KB, MB, GB, ms, s, Hz, frames).</p>
+<h2>Appendix B. Why the compressed session log needs a splitter</h2>
+<p><code>session.v4.jsonl.zstd</code> is 5,990 concatenated zstd frames. A single call to <code>zlib.zstdDecompressSync</code> returns only the first frame, which is 192 bytes of session header. The expanded file is 47.3 MB. This cost me an hour and is worth writing down.</p>
+</body></html>

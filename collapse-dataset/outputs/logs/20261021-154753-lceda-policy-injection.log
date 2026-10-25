@@ -1,0 +1,55 @@
+﻿LCEDA / JLCEDA AUTOMATION POLICY - FEASIBILITY CHECK AND GLOBAL INJECTION
+=======================================================================
+Time : 2026-10-21 15:47
+
+INPUT
+  Two files the user dropped into policy\: lceda-eda-policy.md (9.7 KB, 187 lines) and
+  lceda-eda.json (6.4 KB, 104 lines). Request: check feasibility, then make them part of the rule set
+  and globally effective.
+
+FEASIBILITY - VERIFIED AGAINST THE MACHINE, NOT TAKEN ON TRUST
+  exe            D:\Application\lceda-pro\lceda-pro.exe exists; FileVersion AND ProductVersion are both
+                 4.1.78, which is exactly what the policy claims to have been tested on.
+  PATH           lceda-pro resolves to that same exe, so the policy's bare "lceda-pro doctor" syntax works.
+  environment    ELECTRON_RUN_AS_NODE is currently set to 1 in this shell - which is precisely the trap
+                 section 2 of the policy warns about ("some AI hosts / IDE terminals inherit it"). The
+                 warning is not hypothetical; this harness sets it. That single fact justifies the rule.
+  projects dir   %USERPROFILE%\Documents\LCEDA-Pro\projects holds 7 entries including "DSH PoC V2" and
+                 "DSH PoC 20261021.eprj2" created today between 15:34 and 15:39, i.e. nine minutes before
+                 this request. The policy was therefore produced from real use, not speculation.
+  json/md        Both parse, and the JSON mirrors the markdown section by section.
+  conflicts      None. The only overlap is with the vision tools (image -> schematic routing), and that is
+                 a reference, not a duplicate definition.
+  doctor         Returned no output either way. That is consistent with the editor not being open; the
+                 policy itself states connected:false is normal in that state. Not a blocker.
+
+DECISION: GLOBALLY EFFECTIVE, BUT INJECTED AS AN INDEX, NOT VERBATIM
+  global-agents.md is re-injected into every single conversation, so pasting 187 lines of LCEDA detail
+  there would tax every unrelated task. Rule 9 therefore carries only what must be true at all times:
+    - the trigger condition (any conversation that drives LCEDA)
+    - the pointer to the full document and its machine-readable twin
+    - four iron rules, chosen because each one prevents silent data loss or a 60-second hang:
+        boolean return values lie (importChanges / setNetlist write nothing; getNetlist hangs)
+        never experiment on the user's real projects; back up projects before upgrading
+        never compute pin/pad coordinates yourself
+        clear ELECTRON_RUN_AS_NODE before any CLI call; PCB writes need 4.1.78+
+  Everything else stays in the policy file and is read on demand.
+
+ALSO FIXED: THE POLICY CONTRADICTED ITSELF
+  The markdown still announced "deployment status: NOT globally injected", which would have been false the
+  moment rule 9 landed. Rewrote that line to say it IS injected, and noted that the global layer holds the
+  trigger plus the four rules while the document holds the detail. The JSON "deployment" field was updated
+  in lockstep so the two cannot diverge.
+
+RESULT
+  global layer 8352 -> 9113 chars; source and deployed copy byte-identical.
+  Section order confirmed: persona -> rules 1-9.
+  Rule 8 backup refreshed: 15 files (the two LCEDA files are now covered), 0 failures,
+  destination 20261021-154741.
+
+NOTES FOR WHOEVER READS THIS LATER
+  - The policy's own advice applies to me as well: I did not open the editor, did not create a project and
+    did not call invoke. Feasibility was established from the filesystem and process environment only,
+    which is the safe subset.
+  - If the LCEDA rule set grows, keep rule 9 as an index. Growing it into a full copy here would recreate
+    the two-sources-of-truth problem that this whole structure exists to avoid.

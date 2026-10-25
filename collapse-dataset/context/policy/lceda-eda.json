@@ -1,0 +1,104 @@
+{
+  "policyVersion": "1.0.0",
+  "updatedAt": "2026-10-21",
+  "policyDoc": "policy\\lceda-eda-policy.md",
+  "scope": "any conversation that drives EasyEDA/JLCEDA Pro",
+  "deployment": "INJECTED globally 2026-10-21 as rule 9 of policy/deploy/global-agents.md (trigger plus four iron rules only); read this file for the full ruleset",
+  "product": {
+    "name": "嘉立创EDA(专业版)",
+    "exe": "D:\\Application\\lceda-pro\\lceda-pro.exe",
+    "testedVersions": ["4.1.60", "4.1.78"],
+    "minVersionForPcbWrite": "4.1.78",
+    "cliSince": "4.1.60",
+    "clientOnly": true
+  },
+  "environment": {
+    "critical": "remove ELECTRON_RUN_AS_NODE before every CLI call, otherwise Electron runs as node and arguments are treated as script paths",
+    "probe": "lceda-pro doctor",
+    "readyWhen": "value.connected == true && value.versionMatch == true",
+    "editorMustBeRunning": true
+  },
+  "commands": [
+    { "name": "doctor", "syntax": "lceda-pro doctor", "purpose": "probe bridge endpoint" },
+    { "name": "open", "syntax": "lceda-pro open --path <project> [--headless true]", "purpose": "open project, returns sessionId", "note": "4.1.60 requires path; bare editor not allowed" },
+    { "name": "invoke", "syntax": "lceda-pro invoke --session <id> --ext-uuid eda --code <js> [--args <json>] [--timeout ms]", "purpose": "run JS in the editor" },
+    { "name": "session.list", "syntax": "lceda-pro session list", "purpose": "list CLI-opened sessions only" },
+    { "name": "session.close", "syntax": "lceda-pro session close --session <id> --destroy", "purpose": "close session" },
+    { "name": "doc.api", "syntax": "lceda-pro doc api --class-name <Class> [--method-name <m>]", "purpose": "query local API reference" },
+    { "name": "mcp", "syntax": "lceda-pro --mcp stdio", "purpose": "run as MCP server" }
+  ],
+  "invokeRules": [
+    "always pass --ext-uuid eda",
+    "use forward slashes in paths",
+    "timeout upper bound is 60000 ms on 4.1.60; design for 60 s",
+    "batch component placement in groups of 20-25",
+    "wait 5-10 s after mutations before querying state",
+    "never compute pin/pad coordinates; read them back with getAllPinsByPrimitiveId()",
+    "close sessions with --destroy when done"
+  ],
+  "schematic": {
+    "systemLibrary": "await eda.lib_LibrariesList.getSystemLibraryUuid()",
+    "search": "eda.lib_Device.search(key, LIB, undefined, undefined, pages, page)",
+    "searchPitfall": "omitting LIB returns an empty array without error",
+    "create": "eda.sch_PrimitiveComponent.create(item, x, y, subPartName, rotation, mirror, addIntoBom, addIntoPcb)",
+    "pins": "eda.sch_PrimitiveComponent.getAllPinsByPrimitiveId(primitiveId) -> [{pinNumber,x,y,net}]",
+    "wire": "eda.sch_PrimitiveWire.create([x1,y1,x2,y2,...], net) — endpoints must land on pins; segments must be orthogonal and connected",
+    "save": "eda.sch_Document.save()",
+    "netlist": "eda.sch_ManufactureData.getNetlistFile(name, 'JLCEDA') -> File object; use await file.text(); not written to disk"
+  },
+  "pcb": {
+    "search": "eda.lib_Footprint.search(key, LIB, undefined, pages, page)",
+    "create": "eda.pcb_PrimitiveComponent.create({libraryType:'4', libraryUuid, uuid}, layer, x, y) — layer 1=top, 2=bottom",
+    "createPitfall": "passing the raw search item fails with Error: [object Object]; must wrap it",
+    "pads": "eda.pcb_PrimitiveComponent.getAllPinsByPrimitiveId(primitiveId) -> [{padNumber,x,y,rotation,layer}]",
+    "line": "eda.pcb_PrimitiveLine.create(net, layer, startX, startY, endX, endY, lineWidth, lock)",
+    "autoLayout": "eda.pcb_Document.autoLayout() — works, moves components",
+    "autoRouting": "eda.pcb_Document.autoRouting() — only routes nets that already have connectivity; manual placement alone yields {success:false,totalNetsCount:0}",
+    "save": "eda.pcb_Document.save()",
+    "coordinateUnit": "treat as mil"
+  },
+  "forbidden": [
+    { "api": "eda.pcb_Document.importChanges(schUuid)", "behavior": "returns true, writes nothing (PCB stays 300 bytes); same on eprj2 and eprj3" },
+    { "api": "eda.pcb_Net.setNetlist('JLCEDA', txt)", "behavior": "returns true, net count stays 0 even after save+reopen" },
+    { "api": "eda.sch_Netlist.getNetlist()", "behavior": "deprecated; hangs until the 60 s invoke timeout" }
+  ],
+  "successCriteria": [
+    "never trust a boolean return value",
+    "verify with getAll() count > 0",
+    "verify on-disk artifact changed (eprj3 .epcb2 grew from 300 B to ~49 KB)",
+    "no reliable schematic-to-PCB sync exists; drive PCB primitives directly"
+  ],
+  "versionMatrix": {
+    "4.1.60": { "pcbCreate": "broken", "createProjectFileFormat": "unsupported (eprj2 forced)", "invokeTimeoutMax": 60000, "resultChannel": null },
+    "4.1.78": { "pcbCreate": "works", "createProjectFileFormat": "eprj2|eprj3", "invokeTimeoutMax": "untested", "resultChannel": true }
+  },
+  "imageToSchematic": {
+    "routing": ["PDF with text layer -> vision_read_document", "scan/screenshot -> vision_ocr", "figure/block diagram -> vision_describe"],
+    "identifiers": "MPN/package/pin numbers must come from OCR or text layer; VLM output is a candidate only, phrase as suspected",
+    "output": "netlist DSL JSON, not pixel-level reconstruction",
+    "accuracy": { "singleModule": "80-95%", "densePage": "extract BOM + key nets only", "handDrawn": "not automatable" }
+  },
+  "dataSafety": [
+    "client upgrade wipes the projects directory (observed 4.1.60 -> 4.1.78); back up projects first",
+    "only write inside APP_PROJECT_DIR",
+    "never run experimental writes against the user's real projects; create a throwaway test project",
+    "recovery order: Recycle Bin -> projects-recovery -> database; copy out of the bin with Shell.Application CopyHere, never Restore"
+  ],
+  "workflow": [
+    "clear ELECTRON_RUN_AS_NODE; run doctor until connected",
+    "createProject(..., 'eprj3'); openProject; wait 6 s; getCurrentProjectInfo",
+    "openDocument(schematic page); wait 2.5 s",
+    "search with LIB; batch create; read pins; wire; save",
+    "export via getNetlistFile/getBomFile -> file.text() or saveFileToFileSystem",
+    "openDocument(pcb); create footprints (wrapped, numeric layer); read pads; draw lines; autoLayout; save",
+    "verify on-disk artifacts; session close --destroy"
+  ],
+  "prohibitions": [
+    "no boolean-as-proof",
+    "no writes to user projects",
+    "no manual coordinate math",
+    "no CLI on the browser edition",
+    "no pixel-level schematic reconstruction claimed as automatic",
+    "no automatic ordering — Gerber must be human-reviewed"
+  ]
+}

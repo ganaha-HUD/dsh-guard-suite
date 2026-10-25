@@ -1,0 +1,45 @@
+MCP TEXT-TO-IMAGE OUTAGE - DIAGNOSED AND FIXED
+==============================================
+Time : 2026-10-05 07:51
+
+SYMPTOM
+  Other conversations reported "Error executing tool image_generate"; reproduced in this conversation.
+
+ROOT CAUSE (evidence, not guesswork)
+  The long-lived MCP server processes had started at 06:43:13, i.e. BEFORE the FLUX switch (07:32-07:36)
+  and before the LCM directory was deleted (07:38). Python keeps the code and configuration it loaded at
+  startup, so those processes still pointed at D:\AI_file\models\lcm-dreamshaper-v7-fp16-ov.
+  Proof: loading the pre-switch backup of the server and calling its t2i_pipeline() raised
+      FileNotFoundError: text-to-image model directory not found: ...lcm-dreamshaper-v7-fp16-ov
+  while the current code points at flux1-schnell-int4-ov, which exists.
+
+MY TWO MISTAKES
+  1. I verified the switch only with temporary processes that I started myself (they ran the new code and
+     passed). I never checked the resident server processes, which were the ones the user actually hit.
+  2. Failures were silent: the old code only logged successes, so nothing reached vision-mcp.log and the
+     MCP layer reduced everything to a generic "Error executing tool" message.
+
+FIX
+  Killed PIDs 5580 and 27544; the DSH host automatically respawned the server at 07:48:44, and its log
+  shows "starting dsh-vision MCP server v1.9" followed by four "model check ... OK" lines, including
+  "text-to-image OK D:\AI_file\models\flux1-schnell-int4-ov".
+  Verification: vision_status now lists image gen / detector / anomaly each with [present], and a real
+  image_generate call succeeded - 1024x1024, 4 steps, guidance 0.0, 17.7 s.
+
+HARDENING (server v1.9.0)
+  - image_generate failures are logged (device, prompt prefix, exception type and message)
+  - the raised error now carries the hint: restart the MCP server so it reloads, or fix DSH_T2I_MODEL
+  - vision_status reports each model path with [present]/[MISSING]
+  - startup writes a four-line model self check into vision-mcp.log
+
+RULE WRITTEN (so this cannot recur unnoticed)
+  policy\ai-tool-policy.md section 12 "模型变更后的运维规则" (five rules)
+  policy\ai-tools.json maintenance field (machine readable)
+  AGENTS.md rule 7 and ~/.dsh/AGENTS.md rule 8 gained the bullet "更换模型后必须重启服务端并自检"
+  policy version v1.8.0; storage self test FAIL=0 WARN=0
+
+NOTE FOR THE USER
+  Tools in a given conversation talk to that conversation's own server process. If another conversation
+  still errors, it is still bound to its old process: opening a new conversation gives it a fresh server
+  that loads FLUX. This conversation's tool schema is also stale (old defaults), so calls here must pass
+  1024x1024 / 4 steps / guidance 0.0 explicitly.

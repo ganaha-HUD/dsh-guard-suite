@@ -1,0 +1,223 @@
+{
+  "policyVersion": "1.8.0",
+  "updatedAt": "2026-10-04",
+  "policyDoc": "policy\\ai-tool-policy.md",
+  "scope": "all workspaces and conversations",
+  "transport": "MCP stdio server registered as id: mcp-vision in the DSH profile patch (must be wrapped in an insert)",
+  "server": {
+    "path": "D:\\AI_file\\mcp\\vision-server.py",
+    "version": "1.4.0",
+    "venv": "D:\\AI_file\\envs\\openvino",
+    "log": "D:\\AI_file\\logs\\vision-mcp.log",
+    "registry": "D:\\AI_file\\registry.json"
+  },
+  "tools": [
+    {
+      "name": "vision_read_document",
+      "backend": "PDF text layer -> PP-OCR -> VLM",
+      "device": "CPU/NPU",
+      "latencyMs": [
+        0,
+        4100,
+        18000
+      ],
+      "useFor": "documents (PDF and page images)",
+      "limits": "text layer used when a page has >=120 chars",
+      "prefer": "auto|text|vlm"
+    },
+    {
+      "name": "vision_ocr",
+      "backend": "rapidocr 3.9.2 PP-OCRv6-small (OpenVINO)",
+      "device": "CPU",
+      "latencyMs": [
+        600,
+        4100
+      ],
+      "useFor": "scans, photos of text, screenshots, labels, tables",
+      "limits": "no token limit; native resolution; upstream hardcodes CPU"
+    },
+    {
+      "name": "vision_describe",
+      "backend": "Qwen2.5-VL-3B INT4 (OpenVINO GenAI)",
+      "device": "NPU",
+      "latencyMs": [
+        11000,
+        18000
+      ],
+      "useFor": "figures, charts, diagrams, scenes, photos",
+      "limits": "auto crop + downscale to <=980 visual tokens"
+    },
+    {
+      "name": "vision_ask",
+      "backend": "Qwen2.5-VL-3B INT4 (OpenVINO GenAI)",
+      "device": "NPU",
+      "latencyMs": [
+        11000,
+        18000
+      ],
+      "useFor": "visual QA, counting, spatial relations, chart reading",
+      "limits": "auto crop + downscale to <=980 visual tokens"
+    },
+    {
+      "name": "vision_status",
+      "backend": "-",
+      "device": "-",
+      "latencyMs": [
+        0,
+        0
+      ],
+      "useFor": "engine, device and budget inspection",
+      "limits": "none"
+    },
+    {
+      "name": "vision_detect",
+      "backend": "YOLOX-Tiny (OpenVINO IR)",
+      "device": "NPU",
+      "latencyMs": [
+        7,
+        60
+      ],
+      "useFor": "locating and counting objects, defect localisation, base model for fine-tuning",
+      "limits": "COCO 80 classes; static 416x416 input; tiny model, so scores are modest on large photos",
+      "params": "conf=0.25, iou=0.45, classes=\"\" (comma-separated names or ids), device=NPU, max_det=30, annotate_image=true"
+    },
+    {
+      "name": "anomaly_score",
+      "backend": "PatchCore (OpenVINO IR, Anomalib)",
+      "device": "NPU",
+      "latencyMs": [
+        41,
+        97
+      ],
+      "useFor": "unsupervised surface inspection: screen parts against a known-good baseline without labelled defects",
+      "limits": "trained on normal samples only; currently the synthetic demo model - retrain on the real product; input RGB [0,1] at 256x256; output is a model score, not a measurement",
+      "params": "device=NPU, save_heatmap=true (heatmap marks where the anomaly is)"
+    },
+    {
+      "name": "image_generate",
+      "backend": "FLUX.1-schnell int4 (OpenVINO GenAI)",
+      "device": "GPU (iGPU)",
+      "latencyMs": [
+        13000,
+        18000
+      ],
+      "useFor": "creating illustrations, textures and synthetic training data from a text prompt",
+      "limits": "FLUX.1-schnell is timestep-distilled: 4 steps, guidance_scale=0.0 must be passed explicitly (the library default of 7.5 would wreck the output); licence Apache-2.0; first call includes compilation (about 30-50 s); model 8.61 GB",
+      "params": "prompt, negative_prompt=\"\", width=1024, height=1024, steps=4, guidance=0.0, seed=-1, device=GPU"
+    }
+  ],
+  "routing": [
+    "born-digital PDF -> vision_read_document (text layer first; never OCR a text-layer PDF)",
+    "scanned or photographed text, screenshots, labels -> vision_ocr",
+    "figures, charts, diagrams, scenes, photos -> vision_describe or vision_ask",
+    "numbers, part numbers, serial numbers, dimensions -> must come from the text layer or vision_ocr; never from the VLM",
+    "large image with fine detail -> crop the region first",
+    "tables -> vision_ocr",
+    "locate or count objects -> vision_detect (returns boxes, labels, scores and an annotated image)",
+    "numbers that come out of a detection (counts, positions) are model output, not OCR: state the confidence and the threshold used",
+    "screen a part against a known-good baseline (no labelled defects) -> anomaly_score (returns a score, a normal/defect decision and a heatmap)",
+    "anomaly scores are model output, not measurements: report them as such and never as a pass/fail certificate",
+    "need a picture that does not exist -> image_generate (local FLUX.1-schnell int4, Apache-2.0, 1024x1024 in about 13-18 s warm)",
+    "generated images are synthetic: never present them as photographs of a real object, and label them when they feed a dataset"
+  ],
+  "hardLimits": {
+    "npuVisualTokens": 1024,
+    "npuPixelsApprox": 800000,
+    "serverBudgetTokens": 980,
+    "maxPromptLen": "NPU-only option; accepting a larger value still yields empty output, so it is unusable",
+    "emptyOutput": "model occasionally samples EOS first; server retries with a min_new_tokens ladder (1 -> 32 -> 96)",
+    "ocrDevice": "CPU (upstream hardcodes device_name=CPU)",
+    "vlmHallucination": "identifiers and numbers must be verified by OCR or the text layer"
+  },
+  "trust": {
+    "textLayer": "exact",
+    "ppocr": "high (matches the text layer verbatim in tests)",
+    "vlm": "medium-low: reliable on gist, unreliable on detail and categories",
+    "yolox": "medium: boxes are stable and device-independent, but class labels can be wrong (a capsule-toy machine was labelled suitcase)",
+    "patchcore": "medium-high on its own training distribution (demo set fully separable); it will not transfer to a different product without retraining",
+    "imageGeneration": "synthetic by construction: usable as illustration or augmentation data, never as evidence about the real world"
+  },
+  "vlmOnlyAnswerPolicy": {
+    "allowed": true,
+    "decidedBy": "user, 2026-10-04",
+    "noticeRequired": true,
+    "noticeTemplate": "⚠️ 来源提示：以下内容由本地视觉模型（Qwen2.5-VL-3B @ NPU，耗时 {seconds}s）生成，未与文字层/OCR 交叉校验；其中数字、型号、标签文字等关键信息可能有误。需要精确值时，请让我用 vision_ocr 复核。",
+    "numbersMustBeHedged": true,
+    "hedgeWord": "疑似",
+    "verificationTool": "vision_ocr",
+    "forbiddenPhrasing": [
+      "已确认",
+      "精确读取",
+      "已校验",
+      "verified",
+      "exact"
+    ],
+    "noPreciseValueContent": "scene, layout, pose, colour and object-category descriptions may be stated directly, but the tool and elapsed time must still be named"
+  },
+  "imageGenerationBudget": {
+    "defaultImages": 1,
+    "maxImages": 4,
+    "requiresExplicitRequestForMore": true,
+    "announceCountAndTimeFirst": true,
+    "maxVisionReviewCallsPerRequest": 1,
+    "reviewOnlyWhenAsked": true,
+    "maxPromptIterations": 2,
+    "targetTotalSeconds": 60,
+    "defaults": "1024x1024, steps 4, guidance 0.0 (FLUX.1-schnell, no CFG)",
+    "reproducibility": "fix seed when the user asks for the same image; do not re-roll seeds for taste",
+    "report": "one line: count / size / steps / total time / file path",
+    "forbidden": "dozens or hundreds of images per request, per-image review loops, unbounded retries",
+    "measured": {
+      "coldSeconds": 17.4,
+      "warmSeconds": 13.2,
+      "loadSeconds": 26.0,
+      "resolution": "1024x1024",
+      "steps": 4
+    }
+  },
+  "hardwareLongevity": {
+    "rationale": "this is a laptop: thermals, fan wear and battery life are real constraints",
+    "rules": [
+      "prefer NPU/iGPU over CPU (same work, far less heat)",
+      "use the cheapest adequate tool (text layer > OCR > VLM > detect/anomaly > generation/training)",
+      "pipelines are cached per device: do not warm up or restart the server needlessly (exception: a configuration change requires a restart, see maintenance)",
+      "announce any job above 60 s of sustained load, prefer AC power, never run heavy jobs concurrently",
+      "avoid pointless large writes; models are downloaded once and cached",
+      "monitor the ACPI thermal zone (idle baseline about 27.9 C on this machine); MSAcpi_ThermalZoneTemperature is access-denied here",
+      "keep long jobs interruptible and split them into batches"
+    ]
+  },
+  "maintenance": {
+    "rule": "after changing any model path, restart the MCP server process and verify with vision_status",
+    "why": "the server is a long-lived process: it keeps the configuration it loaded at startup, so a deleted or replaced model directory makes tools fail silently (happened 2026-10-05)",
+    "verify": "call vision_status; every model line must read [present]",
+    "diagnose": "read the tail of D:\\AI_file\\logs\\vision-mcp.log (v1.9 logs model checks at startup and failures at call time)",
+    "never": "do not delete or move a model directory while a server process may still reference it"
+  },
+  "privacy": "all inference is local; no network calls; nothing leaves the machine",
+  "cost": "no API cost; choose the cheapest adequate tool to save time, not money",
+  "reservedTools": [],
+  "reservedToolsNaming": {
+    "confirmedBy": "user, 2026-10-04",
+    "convention": "vision_* for perception, image_* for generation, anomaly_* for anomaly scoring",
+    "confirmed": [
+      "vision_detect"
+    ],
+    "planned": [
+      "image_generate",
+      "anomaly_score"
+    ],
+    "deployed": [
+      "vision_detect",
+      "anomaly_score",
+      "image_generate"
+    ]
+  },
+  "changeProcess": [
+    "edit policy\\ai-tool-policy.md and policy\\ai-tools.json",
+    "mirror to policy\\deploy\\global-agents.md when it affects every conversation",
+    "run tools\\Install-GlobalPolicy.ps1",
+    "write a change log under logs\\<conv-id>\\"
+  ],
+  "thinkingLanguage": "zh-CN: reason, plan and draft in Chinese; keep code, commands, identifiers and paths verbatim"
+}

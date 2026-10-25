@@ -1,0 +1,44 @@
+﻿DOCUMENT CHECK AND ARCHIVAL
+===========================
+Time : 2026-10-20 23:12
+
+SCOPE
+  deliverables (5), logs (20), scripts (9), workspace (11 pending), archive (28 pre-existing).
+  Checked naming, encoding, path references, DOCX integrity, empty files, then archived.
+
+FINDINGS AND ACTIONS
+  1. Naming: 5 files in workspace carried uppercase (all were plugin README copies pulled out of
+     app.asar: dsh-agent-loop-README.zh.md, dsh-client-ui-plugin-manager__README.zh.md,
+     dsh-client-ui-settings-plugin-inventory__README.zh.md, dsh-client-ui-settings-plugins__README.md,
+     dsh-repeat-tool-reminder-README.md). Fixed by lowercasing during the move; a re-scan now reports
+     no non-compliant names anywhere under the conversation folders.
+  2. Encoding: 15/15 correct - every .md/.json is BOM-less, every .ps1 carries a BOM. This is the rule
+     pair established after the two encoding incidents earlier in this conversation.
+  3. Path references: the four deliverable reports mention 12 machine paths in total; all resolve.
+  4. DOCX: 83 paragraphs, 14 tables, zip test clean, 17 parts. Healthy.
+  5. Empty or suspiciously small files: none.
+  6. workspace: emptied (11 artifacts moved to archive), which is the intended end state for a
+     workspace folder.
+
+ARCHIVE LAYOUT
+  archive\conv-20260928-3b54e160\
+    archive-index.md                      <- this round's index, check results and known gaps
+    _recovery\                            <- 28 files, the disk-wipe recovery evidence trail
+    analysis-artifacts-20261020\          <- 11 files, this round's analysis evidence
+
+SIZES AFTER ARCHIVAL
+  deliverables 5 files 73.3 KB | logs 20 files 69.6 KB | scripts 9 files 44.5 KB
+  workspace 0 files | archive 39 files 1885.8 KB
+
+KNOWN TIMELINESS GAP (recorded, not silently ignored)
+  The toolset guide DOCX is v1.4 from 2026-10-11. Four later rule changes are not in it:
+  storage-policy v1.5.0 with the eim_config.toml allow-list entry (10-14), the "PowerShell scripts need a
+  BOM" environment fact (10-13), the read-only ConstrainedLanguage countermeasure (10-13), and the
+  stable-diffusion.cpp + Vulkan uncensored generation route (10-20, still downloading).
+  All four are documented in policy\, AGENTS.md and logs\; only the DOCX lags. Upgrading the DOCX to v1.5
+  is left to the user's call because it means editing the builder and regenerating the document.
+
+DEFERRED
+  The qwen-image-2.1-uncensored download is still running (ETA 11-12 h). When it lands and produces a
+  first image, add a "local uncensored generation" install record to deliverables\ and run one more
+  archival pass.

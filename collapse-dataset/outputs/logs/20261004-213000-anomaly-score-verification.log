@@ -1,0 +1,50 @@
+hCore NPU, 256x256, 96.6 ms] score=0.239  decision=normal
+                        anomaly map max=0.040 → 热力图几乎无热点
+anomaly_score(凹陷)   → [PatchCore NPU, 256x256, 80.0 ms] score=0.955  decision=DEFECT
+                        anomaly map max=0.677 → 热力图定位到缺陷处
+```
+
+## 8. 能力边界（诚实记录）
+
+- 这个模型是**在我自建的合成集上训练的**，用途是**打通并验证流水线**，**不是**可直接上产线的检测模型。
+- **换产品必须重训**：PatchCore 的记忆库只覆盖训练时见过的正常外观；换料号/换光照/换工位都要重新采良品训练。
+- 重训只需一条命令（模板已备好）：
+  ```
+  D:\AI_file\envs\openvino\Scripts\python.exe E:\Deepseek\scripts\conv-20260928-3b54e160\train-patchcore.py
+  ```
+  把脚本里的 `ROOT` 指向真实数据集目录即可；训练仍是秒级。
+- **记忆库随训练集增长**：良品越多模型越大（当前 8.3 MB / 40 张）；上千张需关注体积与 NPU 推理时间。
+- **分数不是合格证**：`anomaly_score` 是模型输出，只能作为筛查参考，判定阈值需按产线误检/漏检代价标定。
+
+## 9. 与上一块拼图的关系
+
+路线 **C1 双支已齐**：
+
+| 支 | 工具 | 何时用 |
+|---|---|---|
+| 有监督定位 | `vision_detect` | 已积累带框缺陷样本，要分类 + 定位 |
+| **无监督筛查** | **`anomaly_score`** | 只有良品，先上筛查、边用边攒缺陷样本 |
+
+实际落地建议：**先用 `anomaly_score` 上线攒数据，等缺陷样本够了几百张，再用它们微调 `vision_detect`**——这正是论文里可以写的两阶段路线。
+
+## 10. 文件与登记
+
+| 项 | 路径 |
+|---|---|
+| 异常检测 IR | `D:\AI_file\models\patchcore-synth-v1\weights\openvino\model-static.xml`（**NPU 用这个**） |
+| 原始导出 | 同目录 `model.xml`（动态批量，勿直接上 NPU） |
+| 数据集 | `D:\AI_file\datasets\synthetic-defect-v1\`（含 `contact-sheet.png`） |
+| 训练脚本 | `E:\Deepseek\scripts\conv-20260928-3b54e160\train-patchcore.py` |
+| 服务端 | `D:\AI_file\mcp\vision-server.py`（**v1.6.0，7 工具**） |
+| 热力图输出 | `D:\AI_file\outputs\anomaly-<图名>-<yyyyMMdd-HHmmss-mmm>.png` |
+| 登记 | `D:\AI_file\registry.json`（4 环境 / **4 模型** / **1 数据集** / 1 工具） |
+| 策略 | `policy\ai-tool-policy.md` v1.3.0、`policy\ai-tools.json` v1.3.0 |
+
+## 11. 参数速查
+
+```
+anomaly_score(image_path, device="NPU", save_heatmap=True)
+  换模型 : 环境变量 DSH_ANOMALY_MODEL 指向新的 model-static.xml
+  换尺寸 : DSH_ANOMALY_SIZE（默认 256，须与导出时一致）
+  注意   : 输入 RGB [0,1]，预处理已在图内；热力图左侧原图、右侧异常热力
+```

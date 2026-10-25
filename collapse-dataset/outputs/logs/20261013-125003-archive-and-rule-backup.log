@@ -1,0 +1,43 @@
+ARCHIVE RELOCATION AND RULE BACKUP
+==================================
+Time : 2026-10-13 12:50
+
+1) ARCHIVED (user request)
+   workspace\_recovery  ->  archive\conv-20260928-3b54e160\_recovery
+   28 files, about 124 KB: the recovery-time scripts (huifu content scans, session-record
+   decompression attempts, candidate identification, user-file restore), the candidate lists,
+   the recovered original copies (ai-tools.json v1.8.0, a vision-server fragment) and two
+   session-record stubs. Verified: the source folder no longer exists and the destination holds
+   the whole tree; nothing was lost in the move.
+
+2) RULE BACKUP (user request)
+   Target : C:\Users\<user>\Documents\Deepseek-rules-backup-20261013-124942
+   Files  : 12 (82 KB)
+            AGENTS.md, README.md,
+            policy\{output-storage-policy.md, storage-policy.json, ai-tool-policy.md,
+                    ai-tools.json, conversation-registry.json},
+            policy\deploy\global-agents.md,
+            tools\{New-ConversationWorkspace.ps1, Install-GlobalPolicy.ps1, Test-StoragePolicy.ps1},
+            plus a new BACKUP-README.md.
+   Verify : every file compared byte-for-byte with its source - all identical (True).
+   Why    : policy\ + tools\ are the sole carrier of both standards, and the E: volume is a
+            removable disk that was wiped once already. Conversation artifacts are excluded on
+            purpose: this backup is about the rules, not about outputs.
+   BACKUP-README.md documents what is inside, why it exists, a ready-to-run restore script and
+   three post-restore cautions: bring policy\ back together with the self test; the C: global
+   copy usually survives an E: failure, so compare timestamps before choosing a side; treat the
+   workspace as authoritative and the backup as disaster recovery only.
+
+3) NOT RESTORED (user decision)
+   Pre-wipe historical deliverables and the session-record format question - both dropped.
+
+4) NOTE ON TOOLING
+   This log had to be written with Node because the session is in read-only mode, where
+   PowerShell runs in ConstrainedLanguage and [System.IO.File]::WriteAllText is refused.
+   That environment fact is now documented in AGENTS.md rule 0 and in the global rule 7.
+
+5) FINAL STATE
+   Self test: FAIL=0 WARN=0.
+   Workspace: policy (6 files), tools (3), scripts (7, incl. the recovered download-file.js),
+   logs, deliverables, reference_file (2 user files), archive (now with the recovery trail),
+   and the other conversation folders left untouched.

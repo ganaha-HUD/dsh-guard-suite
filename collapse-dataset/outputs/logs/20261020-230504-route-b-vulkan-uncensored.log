@@ -1,0 +1,69 @@
+﻿ROUTE B VERIFIED: stable-diffusion.cpp + Vulkan + UNCENSORED Qwen-Image 2.1
+=======================================================================
+Time : 2026-10-20 23:05
+
+WHY THIS ROUTE EXISTS
+  Route A (dsh-qwen-paint + ComfyUI + torch-XPU) was refused by the plugin's own check:
+  "Intel 核显 -> basically cannot run". OpenVINO cannot help either: openvino_genai 2026.4.1 ships
+  QwenImageTransformer2DModel and Qwen3TextEncoder but still has no qwen_image factory, and optimum-intel
+  has no Qwen-Image work either (its recent commits cover Qwen3-ASR / Qwen3-TTS only).
+  So the search moved to a runtime that eats GGUF directly and drives the iGPU through Vulkan.
+
+DECISIVE VERIFICATION (measured on this machine, not assumed)
+  Downloaded sd-master-95b3090-bin-win-vulkan-x64.zip (28 MB, published 2026-10-18) via a working
+  GitHub mirror. Direct github.com was unreachable; ghproxy.net hung; gh-proxy.com and ghfast.top both
+  answered 206 and gh-proxy.com delivered the file.
+  Extracted to D:\AI_file\tools\stable-diffusion-cpp\ and ran `sd-cli.exe --list-devices`:
+      ggml_vulkan: Found 1 Vulkan devices:
+      ggml_vulkan: 0 = Intel(R) Arc(TM) B370 GPU (Intel Corporation) | uma: 1 | fp16: 1 | bf16: 0
+                     | fp4: 0 | warp size: 32 | shared memory: 49152 | int dot: 1
+                     | matrix cores: KHR_coopmat
+      Vulkan0  Intel(R) Arc(TM) B370 GPU
+      CPU      Intel(R) Core(TM) Ultra 5 338H
+  Reading: the iGPU is recognised correctly as UMA (uma: 1), has fp16, integer dot product (int dot: 1)
+  and KHR_coopmat matrix cores - i.e. the quantised path and the fast matmul path are both available.
+  bf16 is absent (bf16: 0), which is fine because we run Q4_K_M weights, not bf16.
+  upstream support: stable-diffusion.cpp announced Day-0 support for Qwen-Image-2.1 on 2026-09-20 and
+  documents it in docs/qwen_image_2.1.md (Qwen3-VL-8B text encoder + its own VAE; dimensions must be
+  divisible by 32; --offload-to-cpu is recommended).
+
+UNCENSORED WEIGHT SET (all three exist and are Q4-able)
+  diffusion   abenzerps/Qwen-Image-2.1-Uncensored-Quantized   qwen-image-2.1-UC-Q4_K_M.gguf      4.29 GB
+  encoder     pottokao/Qwen-Image-2.1-Text-Encoder-Heretic-GGUF  qwen3vl_8b_heretic-Q4_K_M.gguf  4.68 GB
+  vae         abenzerps/...                                    vae/qwen_image_2.1_vae_bf16.safetensors  0.63 GB
+  note: the "Heretic" encoder is the uncensored Qwen3-VL-8B, so the text side is uncensored too, not
+  just the diffusion weights.
+
+THE ONE REAL OBSTACLE: BANDWIDTH
+  huggingface.co   -> ECONNRESET in 490 ms (blocked)
+  hf-mirror.com    -> HTTP 206 but about 136 KB/s measured (1 MB in 7.5 s)
+  modelscope.cn    -> fast (521 ms) but hosts ONLY the official censored Qwen-Image; probing
+                      abenzerps/... and pottokao/... on ModelScope returns 404
+  => the censored set is quick to fetch, the uncensored set is only on HF, and 9.6 GB at ~136 KB/s is
+  roughly 20 hours.
+
+ACTION TAKEN
+  Wrote D:\AI_file\tools\download-qwen-image-models.mjs - a resumable downloader (Range requests,
+  .part files, per-file retry with back-off, progress lines every 30 s, log at
+  D:\AI_file\logs\qwen-image-download.log) and started it as a background job. It fetches VAE first
+  (smallest, proves the channel), then diffusion, then encoder. Interrupting it is safe; re-running
+  resumes from the .part files.
+
+HOW IT WILL BE USED ONCE THE FILES LAND
+  sd-cli.exe --diffusion-model <...>/diffusion/qwen-image-2.1-UC-Q4_K_M.gguf ^
+             --vae <...>/vae/qwen_image_2.1_vae_bf16.safetensors ^
+             --llm <...>/text_encoder/qwen3vl_8b_heretic-Q4_K_M.gguf ^
+             -p "..." --cfg-scale 6.0 --sampling-method euler --offload-to-cpu -o out.png
+  Width/height must be multiples of 32. cfg-scale 6.0 (unlike FLUX schnell's 0.0).
+
+EXPECTATION MANAGEMENT
+  This will be far slower than FLUX int4 on OpenVINO (13-18 s/image). A 6.6B-class diffusion model plus
+  an 8B text encoder, running Q4 on an 80-EU iGPU through Vulkan, plausibly lands in the minutes-per-image
+  range. That is the price of an uncensored stack on integrated graphics. FLUX remains the fast path and
+  is untouched; nothing about the existing MCP image_generate tool changes.
+
+ARTIFACTS
+  D:\AI_file\tools\stable-diffusion-cpp\            sd-cli.exe + DLLs (Vulkan + CPU backends)
+  D:\AI_file\tools\download-qwen-image-models.mjs   resumable downloader
+  D:\AI_file\models\qwen-image-2.1-uncensored\      target tree (vae / diffusion / text_encoder)
+  D:\AI_file\logs\qwen-image-download.log           live progress

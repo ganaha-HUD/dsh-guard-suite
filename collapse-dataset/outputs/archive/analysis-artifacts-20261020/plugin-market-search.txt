@@ -1,0 +1,122 @@
+DSH PLUGIN MARKET: SEARCH FOR ANTI-REPETITION / LOOP-GUARD PLUGINS
+=================================================================
+
+=== 1) @deepseek-ai/dsh-repeat-tool-reminder (the candidate) ===
+-- https://registry.npmmirror.com -> HTTP 200
+   name        : @deepseek-ai/dsh-repeat-tool-reminder
+   latest      : 0.0.1-rc.3
+   description : Repeat-tool-call guard plugin: advisory reminders when an agent loops on identical tool calls
+   license     : BSD-3-Clause
+   homepage    : https://github.com/deepseek-ai/deepseek-harness#readme
+   repository  : {"url":"git+https://github.com/deepseek-ai/deepseek-harness.git","type":"git","directory":"packages/guard/repeat-tool-reminder"}
+   versions    : 30 -> 0.1.7-rc.2, 0.2.0-rc.1, 0.2.0-rc.2, 0.2.1-alpha.1, 0.2.1-alpha.2
+   keywords    : []
+   dependencies: {"@deepseek-ai/schemastery":"^3.18.1-rc.1"}
+   main        : lib/index.js
+   README length: 7152 chars (saved to workspace)
+
+=== 2) wider npm search for loop / repeat / guard / stall / budget plugins ===
+
+-- query "dsh-plugin repeat"  HTTP 200
+     @deepseek-ai/dsh-repeat-tool-reminder             v0.0.1-rc.3    Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     dsh-repeat-tool-breaker                           v0.11.4        Requires dsh >= 0.1.7 (session format 4); on dsh 0.1.5 use dsh-repeat-
+     dsh-guard-repeat-output                           v2.1.7         Host-side degeneration guard for DSH: strips garbage code points from 
+     @huiliyi37/dsh-repeat-tool-guard                  v0.8.0         Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     @monotykamary/dsh-repeat-tool-reminder            v0.1.9         Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     dsh-dupguard                                      v1.9.1         Real-time repetition guard for DeepSeek Harness (DSH): stops generatio
+     @machine-126/dsh-alert-sound                      v0.3.16        DSH web GUI notification alerts: distinct synthesized tones or a spoke
+     @x1a0f3n9/dsh-repeat-tool-reminder                v0.1.7-rc.2    Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     @prettier-ai/dsh-repeat-tool-reminder             v0.1.2-alpha.1 Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     @xneog/dsh-repeat-tool-reminder                   v0.1.0         Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     dsh-plugin-timer                                  v0.3.0         Timer/reminder plugin for DeepSeek Harness: relative or absolute due t
+     dsh-task-reliability                              v0.4.9         DSH 任务可靠性保障插件：模型超时/请求失败自动重试、任务未完成自动继续、思考重复干预、休眠重启后任务恢复、锁屏/休眠唤醒自动恢复、ask
+
+-- query "dsh-plugin loop"  HTTP 200
+     @deepseek-ai/dsh-agent-loop                       v0.1.0-rc.6    The concrete agent loop plugin for the DeepSeek Harness
+     @changfenhuang/dsh-genui                          v0.12.0        GenUI for DeepSeek Harness: interactive UI components rendered inline 
+     @weibaohui/hermes-loop                            v0.3.0         dsh 插件 · 自动复盘：对话收尾后自动复盘，把有价值的经验蒸馏成可复用的技能（skill）存入技能库，模型可直接调用；同时把环境事实与用
+     dsh-loop-engine                                   v0.2.0-rc1     Web-switchable agent loop engine selection for the DeepSeek Harness - 
+     @mrweicodes/dsh-loop-guard                        v1.0.9         Thinking-loop guard for dsh: observes the llm/stream waterfall and bre
+     clearai-dsh                                       v0.5.4         ClearAI: an ontology-first DSH agent preset — evidence-checked researc
+     dsh-lint-loop                                     v0.6.0         The change-aware quality loop for DeepSeek Harness. Fix what the agent
+     dsh-run2skill                                     v0.5.0-alpha.3 Turn explicit DSH session experience into reviewable native Skills
+     dsh-local-loop-fuse                               v0.8.3         DSH 循环护栏：① assistant-stream 字符重复检测（可 abort）；①b 低多样性高重复（末窗 + 滑窗两支，抓「带噪声
+     dsh-repeat-tool-breaker                           v0.11.4        Requires dsh >= 0.1.7 (session format 4); on dsh 0.1.5 use dsh-repeat-
+     @argszero/cordis-plugin-thinking-loop-guard       v0.2.0         Thinking-loop guard for dsh: observes the llm/stream waterfall and bre
+     dsh-talk                                          v0.3.20        Voice-first session loop for DeepSeek Harness: a composer microphone b
+
+-- query "dsh-plugin guard"  HTTP 200
+     @deepseek-ai/dsh-repeat-tool-reminder             v0.0.1-rc.3    Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     @deepseek-ai/dsh-cordis-client-runner             v0.0.1-rc.3    Browser half of dynamic dual-half plugin packages: event subscription,
+     dsh-plugin-writing-guard                          v2.0.1         Scientific writing & document integrity guard for AI-assisted research
+     dsh-completion-guard                              v0.9.0         A task-contract and completion-certification layer for DeepSeek Harnes
+     dsh-doublecheck                                   v0.9.24        Delivery quality gate for DeepSeek Harness: grill the requirements, te
+     dsh-lan-guard                                     v0.7.1         DSH web plugin: expose the official desktop Web UI to the local networ
+     @goodandready/dsh-cron                            v0.3.0         Background automation runner for DSH: isolated agent runs, script/HTTP
+     @khorsheed/dsh-ankh-guard                         v0.4.2         Hard gate for self-modification restarts: a green-build credential bou
+     agents-gitflow-guard                              v0.1.5         A configurable branch-role guard for AI coding agents (DSH / Claude Co
+     dsh-session-guard                                 v4.1.15        高峰自动会话门：周末模式 + 高峰自动暂停 + 官方源二维判定 + 会话级冻结 + 后端自动重试。
+     dsh-guard-repeat-output                           v2.1.7         Host-side degeneration guard for DSH: strips garbage code points from 
+     @mrweicodes/dsh-loop-guard                        v1.0.9         Thinking-loop guard for dsh: observes the llm/stream waterfall and bre
+
+-- query "dsh-plugin turn"  HTTP 200
+     dsh-status-rotator                                v0.35.1        Turn the DSH Web status line into a 1289-phrase meme machine: phase-aw
+     dsh-plugin-genui                                  v0.15.1        Task-specific React apps for DeepSeek Harness with state carried into 
+     dsh-turn-fold                                     v0.7.0         Enhances DeepSeek Harness native folding with a richer turn bar (poker
+     dsh-thoughtdag                                    v0.5.18        ThoughtDAG for DeepSeek Harness: turn the current DSH session into an 
+     dsh-plugin-lookatstudy                            v0.26.3        Turn any markdown, local folder, or GitHub learning repo into a guided
+     dsh-tiddlywiki                                    v0.30.65       把 TiddlyWiki 5 变成你和 Agent 共用的本地文档中心（纯文本 + git）：你在 DSH 界面里阅读、写作、记日记，Age
+     dsh-omni-router                                   v2.4.0         Omni - a reliability and orchestration control plane for DeepSeek Harn
+     dsh-edit-turn                                     v0.2.20        Edit any user turn in DeepSeek Harness and re-run it: an inline editor
+     dsh-turn-notify                                   v0.3.3         DSH Web GUI turn-end reminder: chime + browser Notification on every a
+     @aiwayds/dsh-tui-pi                               v2.27.1        A fully-featured pi-style terminal UI for DeepSeek Harness (dsh) — his
+     dsh-diagram                                       v0.6.1         Turn articles in DeepSeek Harness into editable Excalidraw canvases
+     dsh-delete-turn                                   v0.1.11        Per-message delete for DeepSeek Harness: remove a user message, one re
+
+-- query "dsh-plugin budget"  HTTP 200
+     dsh-cost-meter                                    v1.8.24        DeepSeek Harness 会话费用统计插件:本会话成本、当日费用、历史记录与官方价格同步,支持多厂商多模型价格计费(内置 170+ 
+     dsh-budget                                        v0.4.17        Cost governance for DeepSeek Harness: aggregated token/cost metering p
+     dsh-plugin-usage-meter                            v1.10.0        API 用量/费用/余额仪表 — DeepSeek Harness 网页插件：按钮式用量条实时报价并显示余额；面板含按模型堆叠柱状图（当日逐
+     @dsh-enhanced/assistant-deepseek-budget           v0.1.48        A DeepSeek Harness plugin for Assistant Deepseek Budget.
+     dsh-budget-guard                                  v0.4.0         DeepSeek Harness plugin: LLM cost metering with budget enforcement (de
+     @goodandready/dsh-goal                            v0.2.24        Core Goal Addon (Token Budget, Milestones, Git Snapshots & Retrospecti
+     dsh-cost-track                                    v0.5.1         Track token spend and enforce budgets for every model call your dsh ag
+     @dsh-enhanced/assistant-super-relay-budget        v0.1.48        A Super Relay OpenAI Responses route with conservative goal-budget tok
+     dsh-budget-handoff                                v0.2.1         DeepSeek Harness 会话预算插件：按官方价目表实时算账，预算耗尽时拦截任务并落盘交接快照。
+     dsh-delegate-router                               v0.4.5         Delegate light subagent tasks to cheaper models: automatic Flash/Pro r
+     dsh-token-budget-tools                            v0.3.0         Token budget tools for DeepSeek Harness: split long text into chunks w
+     @alexpeng/dsh-custom-plugin                       v0.7.1         Custom convenience suite for the dsh web GUI: appearance, folders, pro
+
+-- query "dsh-plugin stall"  HTTP 200
+     dsh-task-reliability                              v0.4.9         DSH 任务可靠性保障插件：模型超时/请求失败自动重试、任务未完成自动继续、思考重复干预、休眠重启后任务恢复、锁屏/休眠唤醒自动恢复、ask
+     dsh-thinking-guard                                v1.0.1         Circuit breaker for pure-thinking idle loops in DSH agent turns: tripl
+     @argszero/cordis-plugin-goal-progress-guard       v0.3.0         Progress judgement for dsh autonomous goal rounds: pause an active goa
+     dsh-drift-guard                                   v0.1.0         drift-guard (防跑偏): zero-dep drift guard for DeepSeek Harness (dsh) cod
+     @malipetek/dsh-projects-manager                   v1.0.0         Projects manager: smarter per-project metadata, per-baseline stall sco
+
+-- query "dsh-plugin reminder"  HTTP 200
+     @deepseek-ai/dsh-repeat-tool-reminder             v0.0.1-rc.3    Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     dsh-smart-reminder                                v0.1.29        Smart calendar reminder & schedule assistant for DSH Web GUI: lunar ca
+     dsh-reminder                                      v0.3.1         peon-ping sound notifications for DeepSeek Harness — a faithful port o
+     dsh-completion-reminder                           v1.8.0         DSH client plugin — notify the user when an agent finishes. 10 directl
+     dsh-dingo                                         v2.3.0         DSH 声音提醒 + 对话直达插件：多对话并行时，哪个对话有回复就出声提醒，点右上角卡片直达对应对话；切到别的应用时还有系统级通知（macO
+     @hawkongz/dsh-task-reminder                       v1.6.3         Conversation task-completion reminder for DeepSeek Harness (Web UI and
+     @telosmaylx/dsh-session-notify                    v0.1.23        DSH session completion notifier: appends a plugin system message to th
+     @morlay/dsh-prompt-reminder                       v0.0.2         Demotes the system-prompt sections a reduced prompt leaves out into <s
+     dsh-notify-me                                     v1.5.3         DSH 桌面消息提醒插件：模型需要你操作（审批/方案确认/提问的可操作提醒）或回复在后台完成时，系统通知+提示音+标签页标题提醒你；权限审批
+     @monotykamary/dsh-repeat-tool-reminder            v0.1.9         Repeat-tool-call guard plugin: advisory reminders when an agent loops 
+     dsh-time-reminder                                 v0.2.0         DSH 插件：可调精度的时钟上下文（off/cron/turn/fine）+ 会话内计时器（可见性可跨父子代理） + 跨重启可用倒计时器
+
+-- query "deepseek harness guard"  HTTP 200
+     dsh-completion-guard                              v0.9.0         A task-contract and completion-certification layer for DeepSeek Harnes
+     dsh-plugin-writing-guard                          v2.0.1         Scientific writing & document integrity guard for AI-assisted research
+     agents-gitflow-guard                              v0.1.5         A configurable branch-role guard for AI coding agents (DSH / Claude Co
+     dsh-guard-repeat-output                           v2.1.7         Host-side degeneration guard for DSH: strips garbage code points from 
+     dsh-lan-guard                                     v0.7.1         DSH web plugin: expose the official desktop Web UI to the local networ
+     dsh-session-guard                                 v4.1.15        高峰自动会话门：周末模式 + 高峰自动暂停 + 官方源二维判定 + 会话级冻结 + 后端自动重试。
+     dsh-concurrency-guard                             v1.5.6         DSH 并发请求监控与门闩：挂钩 llm/stream 瀑布，统计全部在途模型请求并按来源分类（主会话/子代理/插件/压缩/标题）与会话活跃
+     dsh-doublecheck                                   v0.9.24        Delivery quality gate for DeepSeek Harness: grill the requirements, te
+     dsh-ast-guard                                     v0.5.5         基于 AST 的 DeepSeek Harness 安全防护插件 — 解析 Bash/PowerShell 命令与文件操作，拦截危险操作（共
+     @mrweicodes/dsh-loop-guard                        v1.0.9         Thinking-loop guard for dsh: observes the llm/stream waterfall and bre
+     @argszero/cordis-plugin-thinking-loop-guard       v0.2.0         Thinking-loop guard for dsh: observes the llm/stream waterfall and bre
+     @yun520-1/deepseek-heartflow                      v0.6.8         心虫 HeartFlow — AGI 第1层辨别门禁作为 DSH 插件: 47维纯规则判别 (heartflow_check/analyze

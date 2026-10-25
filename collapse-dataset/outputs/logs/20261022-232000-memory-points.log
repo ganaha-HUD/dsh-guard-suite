@@ -1,0 +1,50 @@
+MEMORY POINTS EXTRACTED FROM THIS CONVERSATION
+==============================================
+Time : 2026-10-22 23:19
+
+REQUEST
+  Consolidate the earlier conversation into reusable memory points, discarding what is no longer useful.
+
+WHAT I KEPT AND WHY
+  The filter was "would knowing this save time or prevent a repeat failure in a FUTURE conversation".
+  Kept:
+    - every trap actually hit (11 of them), each with the exact symptom and the correct workaround
+    - DSH platform mechanics that are not documented anywhere obvious (profile ownership, bundles as the
+      enable flag, load order, the insert-only rule, the compat gate, semver ranges defeating updates,
+      MCP tool registration and the fact that MCP swallows exception text)
+    - measured numbers for the local model stack, including the parameters that silently ruin output
+      (steps below 20, missing --offload-to-cpu, missing 32-multiple dimensions)
+    - download/network reality, including the fact that a VPN changed throughput by an order of magnitude
+    - methodology: verify before installing, test the origin before building a downloader, single source
+      of truth, index-style injection, the fixed rule-change sequence, byte-level verification
+  Discarded:
+    - per-command output and step-by-step debugging narration (still in logs\, that is what logs are for)
+    - intermediate conclusions that a later step made obsolete (e.g. "Qwen-Image needs to wait for an
+      OpenVINO factory" was superseded by the stable-diffusion.cpp route)
+    - single-use task details that have no reuse value (which exact image was generated when)
+
+STRUCTURE
+  policy\memory-points.md, 7.5 KB, 96 lines, seven sections:
+    1. eleven traps (table: trap / symptom / correct approach)
+    2. DSH platform mechanics
+    3. local model stack with measured numbers and hard parameters
+    4. download and network measurements
+    5. working method (eight principles)
+    6. machine quick reference
+    7. explicit list of what is deliberately NOT recorded
+
+HOW IT BECOMES ACTUALLY REMEMBERED
+  A memory file nobody reads is decoration. Added rule 10 to the global layer, which IS injected into
+  every conversation: it carries the trigger condition, the path, and the four highest-frequency points.
+  Everything else is read on demand. This keeps the per-turn cost tiny while making the knowledge
+  reachable, which is the same index-style pattern used for the LCEDA rules.
+
+SELF-REFERENTIAL NOTE
+  The very act of writing this file hit the trap listed as item 1: two consecutive inline PowerShell
+  attempts failed because non-ASCII text in `pwsh -Command` gets mangled, and the fix was to write a
+  Python file (Python 3 defaults to UTF-8, no BOM needed) onto the NTFS drive and execute that. The trap
+  entry is therefore not theoretical - it cost two failed attempts while documenting itself.
+
+VERIFICATION
+  global layer 10010 -> 10183 chars; source and deployed copy byte-identical; section order confirmed
+  persona -> rules 1-10. Rule 8 backup refreshed: 16 files (memory-points.md now covered), 0 failures.

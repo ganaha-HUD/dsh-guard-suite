@@ -1,3 +1,15 @@
+> **This repository has three parts.**
+>
+> | path | what it is |
+> |---|---|
+> | `index.js`, `vendor/`, `cordis.patch.yml` | the DSH guard plugin (documented below) |
+> | [`collapse-dataset/`](./collapse-dataset/) | annotated dataset: 137 turns, 1,384 assistant steps, full log, experimental context |
+> | [`paper/`](./paper/) | technical report — *Delayed Collapse in an LLM Tool-Use Session* (EN / ZH, md + docx + html) |
+>
+> Start with [`collapse-dataset/docs/README.md`](./collapse-dataset/docs/README.md) if you came for the data,
+> or with [`paper/report-v1.md`](./paper/report-v1.md) if you came for the write-up.
+
+---
 # dsh-guard-suite
 
 Two collapse guards for [DSH](https://github.com/deepseek-ai) in one install: the

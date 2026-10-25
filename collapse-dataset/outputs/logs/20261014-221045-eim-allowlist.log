@@ -1,0 +1,35 @@
+﻿EIM CONFIG ADMITTED TO THE ROOT ALLOW LIST
+==========================================
+Time : 2026-10-14 22:10
+
+DECISION (user)
+  Add eim_config.toml to the workspace root allow list. Leave the non-ASCII file names under workspace\
+  alone for now.
+
+WHY IT IS LEGITIMATE
+  eim_config.toml is written by the ESP-IDF installer (EIM) and the tool expects it in the project root
+  - it is tool-generated configuration, not agent output, which is why the self test reported it as a
+  WARN (placement) rather than a FAIL (a real rule breach).
+
+CHANGED, IN THE ORDER THE CHANGE PROCESS PRESCRIBES
+  1. policy\storage-policy.json -> v1.5.0, updatedAt 2026-10-14
+       rootAllowList now 12 entries (added eim_config.toml)
+       new rootAllowListNotes records WHY each such file is admitted, to spare the next reader the doubt
+  2. policy\output-storage-policy.md section 4 - names the file, explains the reason, and states the
+     general rule for future cases: any further tool-generated root file must be registered in
+     rootAllowList with its justification
+  3. AGENTS.md rule 2 - same, in the injected summary
+  4. tools\Test-StoragePolicy.ps1 - fallback allow list updated too (it is only used when a workspace has
+     no policy file, but keeping it in sync avoids a confusing divergence), written with a BOM
+  5. policy\deploy\global-agents.md rule 3 - generalised wording only ("tool-generated configuration
+     files, registered in that workspace's rootAllowList"). Deliberately NOT naming eim_config.toml at
+     the global layer: that layer applies to every workspace and should carry the principle, not one
+     machine's tooling detail.
+  6. Global copy redeployed; source and %USERPROFILE%\.dsh\AGENTS.md verified byte-identical
+  7. Rule backup refreshed
+
+RESULT
+  Self test now reports FAIL=0 WARN=1. The single remaining warning is the non-ASCII file names under
+  workspace\ (wind-sensor material and similar) - user-owned files from another conversation, left
+  untouched by decision. Placement is the only issue; reference_file\ would exempt them from the ASCII
+  naming rule if they ever need to move.

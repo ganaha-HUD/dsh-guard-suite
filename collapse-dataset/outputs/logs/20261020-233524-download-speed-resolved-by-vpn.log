@@ -1,0 +1,38 @@
+﻿DOWNLOAD SPEED - RESOLVED BY THE VPN (supersedes the earlier "14 hours" estimate)
+===============================================================================
+Time : 2026-10-20 23:35
+
+WHAT CHANGED
+  The user turned on their VPN (TUN / global mode - no local proxy port is listening, so node's direct
+  HTTPS goes through the tunnel transparently; no HTTPS_PROXY needed).
+
+MEASURED
+  huggingface.co  direct : HTTP 206, 6.0 MB in 3.7 s  -> 1661 KB/s
+  hf-mirror.com  control : HTTP 206, 6.0 MB in 9.0 s  ->  686 KB/s
+  sustained on the real download (node fs.stat, 60 s window):
+      180.3 MB -> 266.9 MB  => 1477 KB/s (1.44 MB/s)
+  ETA for the remaining 9.34 GB: about 111 minutes.
+
+SO THE EARLIER CONCLUSION WAS NETWORK-BOUND, AS SUSPECTED
+  Before the VPN: 197-348 KB/s on hf-mirror, and 8 concurrent range requests would stall entirely.
+  After the VPN:  1.4-1.9 MB/s single connection, no concurrency tricks needed. The mirror survey and the
+  segmented-downloader experiment were therefore solving the wrong problem - the link was the limit.
+  Lesson: when a large download is slow, test whether a plain direct connection to the origin is faster
+  before engineering around a mirror.
+
+FINAL SETUP
+  D:\AI_file\tools\download-qwen-image-models.mjs with BASE = https://huggingface.co
+  sequential: VAE 0.63 GB -> diffusion 4.29 GB -> encoder 4.68 GB
+  resuming from the retained .part (52.7 MB was already on disk and carried over).
+  One process only: PID was 16092 at the time of writing.
+
+STILL TRUE / STILL USEFUL
+  - job_kill does not kill the node child; verify with a process listing after killing a download job.
+  - PowerShell's (Get-Item).Length lags for files being appended by node; use node fs.statSync or the
+    downloader's own log to judge progress.
+  - hf-mirror stalls on 8 concurrent large range requests (confirmed twice), so the segmented downloader
+    is not an option there - but with the VPN it is unnecessary anyway.
+
+NEXT
+  When the three files finish, verify stable-diffusion.cpp actually renders an image with them, then add
+  the install record to deliverables\ and run another archival pass (per the user's earlier instruction).

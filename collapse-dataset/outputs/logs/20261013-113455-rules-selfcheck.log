@@ -1,0 +1,49 @@
+RULES SELF-CHECK
+================
+Time : 2026-10-13 11:34
+
+SCOPE
+  Both standards (output storage, local-AI usage): every carrier, the tool scripts, the injected global
+  copy, the AI tool chain, and the leftovers from the disk-wipe recovery.
+
+METHOD
+  self-test script; cross-file consistency by feeding values from the JSON files back into the markdown
+  and both AGENTS files; every machine path mentioned in the rule documents resolved; section structure
+  of the AI policy; stale-content scan; injection-layer equality; vision_status.
+
+FIVE FINDINGS, ALL FIXED
+  P1 (real defect)  AGENTS.md rule 0 told future conversations to download with
+     scripts\conv-20260928-3b54e160\download-file.js, but that file no longer existed. Recovered the
+     original from C:\huifu by content (f0020992.txt, 3531 bytes); node --check passes; it really does
+     redirects, .part resume and progress output as described.
+  P5 (rule gap)     Rule 0's advice "write files with PowerShell directly" does not work in DSH
+     read-only mode: PowerShell then runs in ConstrainedLanguage and [Math]::Round, .Substring(),
+     New-Object (non-core) and [System.IO.File]::WriteAllText all fail. Added the fact plus the Node.js
+     fallback to AGENTS.md rule 0, output-storage-policy.md section 10 and global-agents.md rule 7.
+  P3 (transparency) the three rebuilt tools\*.ps1 carried no rebuild note; added.
+  P2 (transparency) output-storage-policy.md did not mention that the rebuilt text is shorter than the
+     original (about 6.5 KB vs 14.9 KB); added a fidelity note.
+  P4 (minor)        README uses a relative logs\vision-mcp.log inside a sentence that already names
+     D:\AI_file; left as is - it is correct, just terse.
+
+SELF-INFLICTED ISSUE, ALREADY CLEANED
+  Passing Chinese source through PowerShell into Node on stdin corrupts it into question marks; one
+  damaged line briefly landed in output-storage-policy.md. Removed with pure-ASCII line surgery and the
+  pitfall is now documented in rule 0.
+
+PASSED
+  self test FAIL=0 WARN=0 | six categories consistent in four places | 8 tools aligned across json, md
+  and both AGENTS | budget numbers 1 / 4 / 60 consistent | version chain 1.3.0 / 1.9.0 / server 1.11.0
+  matching D:\AI_file\registry.json | 7 longevity rules | 21 machine paths all resolve | AI policy
+  sections 1-12 complete | both AGENTS clause-by-clause | global copy byte-identical to its source and
+  reloaded by DSH | vision_status all models [present] | registry regex matches every folder |
+  reference_file still agent-clean with 2 user files.
+
+POSITIVE EVIDENCE OF ENFORCEMENT
+  Another conversation, conv-20261012-7817dfa3 (an ESP32 project), produced deliverables, logs and
+  scripts in exactly the prescribed layout and registered itself in conversation-registry.json - the
+  rebuilt rules are being followed by new conversations, not just sitting in files.
+
+LEFT FOR THE USER TO DECIDE
+  workspace\_recovery (28 files, 124 KB) kept as the recovery evidence trail; policy+tools about 62 KB
+  worth backing up outside the removable E: volume; the non-standard multi-frame session record format.

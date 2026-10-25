@@ -1,0 +1,113 @@
+{
+ "split_turn": 86,
+ "comparison": [
+  {
+   "metric": "tool calls / step",
+   "pre_mean": 1.06,
+   "post_mean": 0.897,
+   "pre_median": 1,
+   "post_median": 1,
+   "change_pct": -15
+  },
+  {
+   "metric": "chars / step",
+   "pre_mean": 2724.875,
+   "post_mean": 904.151,
+   "pre_median": 2110.5,
+   "post_median": 741,
+   "change_pct": -67
+  },
+  {
+   "metric": "template hits / step",
+   "pre_mean": 0.04,
+   "post_mean": 11.961,
+   "pre_median": 0,
+   "post_median": 7,
+   "change_pct": 29803
+  },
+  {
+   "metric": "falsify words / step",
+   "pre_mean": 0.071,
+   "post_mean": 0.133,
+   "pre_median": 0,
+   "post_median": 0,
+   "change_pct": 87
+  },
+  {
+   "metric": "evidence / kchar",
+   "pre_mean": 2.33,
+   "post_mean": 3.912,
+   "pre_median": null,
+   "post_median": null,
+   "change_pct": 68
+  },
+  {
+   "metric": "assertions / kchar",
+   "pre_mean": 0.549,
+   "post_mean": 1.096,
+   "pre_median": null,
+   "post_median": null,
+   "change_pct": 100
+  },
+  {
+   "metric": "action words / kchar",
+   "pre_mean": 0.385,
+   "post_mean": 0.712,
+   "pre_median": null,
+   "post_median": null,
+   "change_pct": 85
+  }
+ ],
+ "rates": {
+  "steps": {
+   "pre": 926,
+   "post": 458
+  },
+  "collapse_rate": {
+   "pre": 0.11,
+   "post": 1.97
+  },
+  "suspect_rate": {
+   "pre": 0.11,
+   "post": 59.61
+  },
+  "zero_tool_rate": {
+   "pre": 8.42,
+   "post": 11.35
+  }
+ },
+ "trend": [
+  {
+   "band": "T1-40",
+   "n_steps": 412,
+   "tools_per_step": 1.16,
+   "chars_per_step": 3782,
+   "template_per_step": 0,
+   "collapse": 1
+  },
+  {
+   "band": "T41-85",
+   "n_steps": 514,
+   "tools_per_step": 0.98,
+   "chars_per_step": 1877,
+   "template_per_step": 0.07,
+   "collapse": 0
+  },
+  {
+   "band": "T86-110",
+   "n_steps": 213,
+   "tools_per_step": 0.9,
+   "chars_per_step": 1034,
+   "template_per_step": 4.99,
+   "collapse": 0
+  },
+  {
+   "band": "T111-137",
+   "n_steps": 245,
+   "tools_per_step": 0.9,
+   "chars_per_step": 792,
+   "template_per_step": 18.02,
+   "collapse": 9
+  }
+ ]
+}

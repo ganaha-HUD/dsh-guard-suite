@@ -1,0 +1,55 @@
+﻿dsh-guard-repeat-output INSTALLED AND VERIFIED ON THE DESKTOP CLIENT
+====================================================================
+Time : 2026-10-13 21:54
+
+VERIFICATION (script: scripts\conv-20260928-3b54e160\check-guard-plugin.ps1)
+  [1] dependency in profiles\desktop\package.json        : ^2.1.7
+  [2] listed in dsh.profile.bundles                      : TRUE
+      bundles = @deepseek-ai/dsh-base, @deepseek-ai/dsh-web-app, dshmarket,
+                @deepseek-ai/dsh-experimental-auto-review, @muwinds/dsh-archived-sessions,
+                dsh-guard-repeat-output
+  [3] package present under node_modules                 : TRUE, version 2.1.7, 9 files
+  [4] conviction log (~/.dsh/logs/dsh-guard-repeat-output.log)   : not yet
+  [5] discarded-copy dir (~/.dsh/logs/guard-repeat-output-pruned) : not yet
+  [6] DSH host process started 21:50:49, package installed 21:49:14  -> package predates the process,
+      so the running host has already loaded it
+  VERDICT: installed and enabled.
+
+WHY cordis.patch.yml LOOKS UNCHANGED (and that is correct)
+  cordis.yml states the tree is composed as patches: first every bundle in package.json's
+  dsh.profile.bundles, then cordis.patch.yml, then --patch overlays. Because the plugin was enabled as a
+  BUNDLE, its configuration comes from the plugin's own cordis.patch.yml inside the package, and the
+  profile-level file only needs entries for things the profile overrides. So its absence there is
+  expected, not a sign that it was left disabled.
+
+THE COMPATIBILITY GATE WAS PASSED
+  .plugin-manager\logs\operation-mWh9Hd\pnpm.log records a clean install:
+      dependencies: + dsh-guard-repeat-output ^2.1.7 / Packages: +1 / Done in 766ms
+  By contrast another operation was refused outright:
+      installation rejected: Plugin @chushiz/dsh-archive-manager@0.5.0 is incompatible with dsh 0.2.0-rc.2
+      (peerDependencies @deepseek-ai/dsh-client-runtime ^0.1.0-rc.8) ... nothing was installed.
+  So DSH enforces a peer-compatibility gate, and this plugin cleared it.
+
+HOW TO CONFIRM IT IS ACTUALLY WORKING LATER
+  The plugin writes two artifacts under %USERPROFILE%\.dsh\logs\ :
+    dsh-guard-repeat-output.log        - one record per conviction (nothing yet: no collapse happened)
+    guard-repeat-output-pruned\        - sidecar copies of discarded text (up to 262144 chars each)
+  Either file appearing IS the proof that it intercepted something. Until then it is armed but untested.
+
+TWO MISTAKES I MADE WHILE BUILDING THE VERIFICATION SCRIPT (both are now documented rules)
+  1. Wrote the script as UTF-8 WITHOUT BOM. PowerShell 5.1 read the Chinese comments as GB2312, the
+     mojibake broke the parse, and it died with "Unexpected token". This is exactly the failure already
+     recorded in AGENTS.md rule 0 - I walked into it again one hour after writing the rule, which is
+     decent evidence that the rule is worth having. Fixed by writing with UTF8Encoding($true).
+  2. Named a parameter $Home, which collides with PowerShell's read-only automatic variable:
+     "Cannot overwrite variable Home because it is read-only or constant."
+     Renamed to $DshHome. (Same class of mistake as the earlier $HOME note in the rules.)
+
+TUNABLES, IF IT EVER MISFIRES
+  Edit the plugin's own config in the Plugins page (written into the profile patch; usually no restart):
+    truncateChannels   default ['reasoning']  - only the reasoning channel is cut
+    modelIncludes      default ['deepseek']   - restrict to DeepSeek-family models
+    maxDegenerationRetries default 2          - discard-and-reissue budget
+    windowChars / minSegments / phraseRun / lowInfoDupShare / maxUniqueGramRatio - detection sensitivity
+    copyDir / copyMaxChars                    - sidecar copies (set copyDir null to disable)
+    logPath                                   - conviction log location
