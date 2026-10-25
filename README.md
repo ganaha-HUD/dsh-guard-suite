@@ -1,3 +1,7 @@
+># Delayed Collapse in an LLM Tool-Use Session
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23632998.svg)](https://doi.org/10.5281/zenodo.23632998)
+
 > **This repository has three parts.**
 >
 > | path | what it is |
