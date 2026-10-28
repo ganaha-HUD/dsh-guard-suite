@@ -9,6 +9,7 @@
 > | `index.js`, `vendor/`, `cordis.patch.yml` | the DSH guard plugin (documented below) |
 > | [`collapse-dataset/`](./collapse-dataset/) | annotated dataset: 137 turns, 1,384 assistant steps, full log, experimental context |
 > | [`paper/`](./paper/) | technical report — *Delayed Collapse in an LLM Tool-Use Session* (EN / ZH, md + docx + html) |
+> | [`v2-inference/`](./v2-inference/) | inference-time replication: detector v3.0, collection harness, analysis, derived tables (64 sessions, 2 models, 2×2) |
 >
 > Start with [`collapse-dataset/docs/README.md`](./collapse-dataset/docs/README.md) if you came for the data,
 > or with [`paper/report-v1.md`](./paper/report-v1.md) if you came for the write-up.
