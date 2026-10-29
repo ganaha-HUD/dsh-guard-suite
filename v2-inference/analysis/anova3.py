@@ -80,7 +80,11 @@ for m in METRICS:
     d2 = df.copy()
     d2["y"] = d2[m]
     model = smf.ols(formula, data=d2).fit()
-    aov = anova_lm(model, typ=3)
+    # typ=2, not typ=3: anova_lm(typ=3) does not re-code to sum-to-zero, and on
+    # treatment coding it returns sums of squares that are neither the reference-cell
+    # contrast nor the marginal one. The design is balanced (8 sessions per cell),
+    # so Type I = II = III and typ=2 is the correct Type III value.
+    aov = anova_lm(model, typ=2)
     ss_err = aov.loc["Residual", "sum_sq"]
     for idx in aov.index:
         if idx == "Residual" or idx.startswith("Intercept"): continue

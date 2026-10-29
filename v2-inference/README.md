@@ -18,6 +18,11 @@ analysis and to check the numbers.
 | `analysis/*.py` | metric computation, the two estimation levels (session ANOVA and turn-level GEE), permutation tests, ICC, the loop profile, and the PDF build |
 | `tables/turnlevel.csv` | 3,840 rows, one per turn; the input to every turn-level model |
 | `tables/anova3-records.csv` | 64 rows, one per session; the input to every session-level model |
+| `analysis/anova3_fixed.py` | the corrected session-level ANOVA: recomputes Type III under both typ=2 and sum-to-zero typ=3 and asserts they agree |
+| `analysis/check_truncation.py` | counts turns cut off by the five-step cap (285 of 3,840, all adverse) |
+| `analysis/truncation_sensitivity.py` | refits the interaction with the truncated turns dropped |
+| `analysis/perm_interaction.py` | the stratified permutation behind the p = .094 and p = .176 values (seed 20261029, 4,000 shuffles) |
+| `errata/` | the two errata and the review response for v2.1 |
 
 ## The raw logs
 
@@ -78,3 +83,18 @@ produced on Windows. The values are identical; only the byte-level checksum diff
 ## Licence
 
 Code: MIT, as the rest of this repository. The tables are released under CC BY 4.0.
+
+## Corrections in v2.1 (29 October 2026)
+
+`analysis/anova3.py` originally called `anova_lm(..., typ=3)` on treatment-coded factors.
+That call does not return Type III sums of squares; on this balanced design it returned
+values that were neither the reference-cell contrast nor the marginal one, and every
+session-level F in v2.0 was wrong (the regime effect on the zero-tool share was 9.51,
+not 97.06). The file now uses `typ=2`, which on a balanced design equals Type III.
+`anova3_fixed.py` computes both routes and asserts they agree.
+
+Three further defects are recorded in `errata/`: the sign of the persona coefficient,
+the conflation of the turn-level `zero_tool` with the step-level `zero_ratio`, and the
+disclosure of the five-step cap. See `errata/ERRATUM-v2.1-20261029.md`.
+
+**Tag:** `v2.1.1` points at the commit that contains this note.
