@@ -21,7 +21,8 @@ analysis and to check the numbers.
 | `analysis/anova3_fixed.py` | the corrected session-level ANOVA: recomputes Type III under both typ=2 and sum-to-zero typ=3 and asserts they agree |
 | `analysis/check_truncation.py` | counts turns cut off by the five-step cap (285 of 3,840, all adverse) |
 | `analysis/truncation_sensitivity.py` | refits the interaction with the truncated turns dropped |
-| `analysis/perm_interaction.py` | the stratified permutation behind the p = .094 and p = .176 values (seed 20261029, 4,000 shuffles) |
+| `analysis/perm_resid.py` | the interaction-only permutation: residuals under the main-effects model are shuffled, giving p = .021 / .022 |
+| `analysis/perm_interaction.py` | **deprecated**: shuffles persona labels (destroying the main effect) and keeps a fixed cell coefficient; its p = .094 / .176 are retracted |
 | `errata/` | the two errata and the review response for v2.1 |
 
 ## The raw logs
@@ -98,3 +99,5 @@ the conflation of the turn-level `zero_tool` with the step-level `zero_ratio`, a
 disclosure of the five-step cap. See `errata/ERRATUM-v2.1-20261029.md`.
 
 **Tag:** `v2.1.1` points at the commit that contains this note.
+
+**Tag:** `v2.1.2` replaces `v2.1.1` and carries the corrected permutation.

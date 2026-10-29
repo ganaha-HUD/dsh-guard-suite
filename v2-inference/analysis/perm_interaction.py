@@ -1,3 +1,7 @@
+# DEPRECATED (2026-10-29): this permutation shuffles persona labels, which
+# destroys the persona main effect together with the interaction, and it keeps
+# a fixed coefficient of 16 after shuffling even though cell sizes change.
+# Its p = .094 / .176 values are retracted. Use perm_resid.py instead.
 # -*- coding: utf-8 -*-
 """Permutation tests for the two-way and three-way terms, balanced 2x2x2."""
 import os, sys
