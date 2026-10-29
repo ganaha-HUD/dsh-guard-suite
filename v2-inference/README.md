@@ -42,6 +42,12 @@ Formulas in the PDF are rendered with matplotlib mathtext in a STIX serif face; 
 converter sets that explicitly, because the matplotlib default (DejaVu Sans) makes
 identifiers like `tool_calls` look like code.
 
+## How the adversity factor is coded
+
+See [ENV_CODING.md](./ENV_CODING.md). In short: the design matrix carries
+`C(adversity)[T.shun]`, so the indicator is `D = (env == "shun")`, and a positive
+coefficient means the working regime has the higher outcome.
+
 ## Reproduction checkpoints
 
 If a re-run disagrees with the paper, these are the values that should match first:
